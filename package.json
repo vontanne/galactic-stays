@@ -6,10 +6,15 @@
     "@sap/cds": "^10"
   },
   "devDependencies": {
-    "@cap-js/sqlite": "^3"
+    "@cap-js/cds-test": "^1.0.2",
+    "@cap-js/sqlite": "^3",
+    "@sap/eslint-plugin-cds": "^4",
+    "eslint": "^10.11.0"
   },
   "scripts": {
-    "start": "cds-serve"
+    "start": "cds-serve",
+    "lint": "eslint .",
+    "test": "node --test"
   },
   "private": true
 }
