@@ -16,5 +16,35 @@
     "lint": "eslint .",
     "test": "node --test"
   },
+  "cds": {
+    "requires": {
+      "auth": {
+        "[development]": {
+          "kind": "basic",
+          "users": {
+            "admin": {
+              "password": "admin",
+              "roles": [
+                "Admin"
+              ]
+            },
+            "anakin": {
+              "password": "anakin",
+              "roles": [
+                "Traveler"
+              ]
+            },
+            "padme": {
+              "password": "padme",
+              "roles": [
+                "Traveler"
+              ]
+            },
+            "*": false
+          }
+        }
+      }
+    }
+  },
   "private": true
 }
