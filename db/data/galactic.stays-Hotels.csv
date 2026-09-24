@@ -1,0 +1,4 @@
+ID;name;planet_ID;address;description;phoneNumber;checkInTime;checkOutTime;isActive
+7a6f63c8-7208-4ab8-9b91-785f746c9398;Mos Espa Grand;10f11185-ee89-4caf-8cb0-5c8c37a6cdfa;14 Podracer Avenue, Mos Espa;A comfortable stay near the Mos Espa markets.;+999 101 100 101;15:00:00;11:00:00;true
+9054d54f-b5fb-4727-aa47-186696d62e81;Galactic City Hotel;12a56c0e-f617-4dc6-b331-49b17baa2c6a;500 Senate District, Galactic City;A central hotel serving travelers visiting the Republic capital.;+999 202 200 202;14:00:00;11:00:00;true
+61f98a7e-bdd1-4e39-857d-a657ec28bd42;Theed Royal Hotel;66d1b81e-3edc-46ce-b5e1-ff0e88cdfa54;1 Palace Plaza, Theed;A peaceful hotel overlooking the historic city of Theed.;+999 303 300 303;15:00:00;12:00:00;true
