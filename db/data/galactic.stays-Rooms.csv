@@ -1,0 +1,7 @@
+ID;hotel_ID;number;type;capacity;pricePerNight;currency_code;isActive
+8d1c5e71-4f37-49c8-b9a8-6f2b04e67101;7a6f63c8-7208-4ab8-9b91-785f746c9398;101;Standard;2;120.00;GCR;true
+ac734402-0c3a-40a3-98d9-85cf71937201;7a6f63c8-7208-4ab8-9b91-785f746c9398;201;Family;6;280.00;GCR;false
+cf925216-09dc-48a1-a30b-bd7ea6e36101;9054d54f-b5fb-4727-aa47-186696d62e81;101;Deluxe;2;450.00;GCR;true
+e7f3b261-d14e-43ca-8d04-2cb88ee36501;9054d54f-b5fb-4727-aa47-186696d62e81;501;Diplomatic;8;2500.00;GCR;true
+15be86d4-2f4f-4b67-9295-f5ff2eb77101;61f98a7e-bdd1-4e39-857d-a657ec28bd42;101;Standard;2;180.00;GCR;true
+699ddf2a-d3c8-493c-ab42-3e6f2d217301;61f98a7e-bdd1-4e39-857d-a657ec28bd42;301;Suite;4;650.00;GCR;true
