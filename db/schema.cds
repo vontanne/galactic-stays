@@ -9,7 +9,9 @@ using {
 
 using {
   galactic.stays.Species,
-  galactic.stays.RoomType
+  galactic.stays.RoomType,
+  galactic.stays.BookingStatus,
+  galactic.stays.PaymentStatus
 } from './types';
 
 @assert.unique: {planetName: [name]}
@@ -79,4 +81,62 @@ entity Rooms : cuid, managed {
   currency      : Currency not null default 'GCR';
 
   isActive      : Boolean not null default true;
+}
+
+entity Bookings : cuid, managed {
+  traveler         : Association to one Travelers not null;
+
+  room             : Association to one Rooms not null;
+
+  checkInDate      : Date not null;
+  checkInTime      : Time not null;
+  checkOutDate     : Date not null;
+  checkOutTime     : Time not null;
+
+  @assert.range: [
+    1,
+    12
+  ]
+  guestCount       : Integer not null;
+
+  specialRequests  : String(1000);
+
+  @assert.range: true
+  status           : BookingStatus not null default #AwaitingPayment;
+
+  @assert.range: true
+  paymentStatus    : PaymentStatus not null default #Unpaid;
+
+  paymentExpiresAt : Timestamp not null;
+
+  @assert.range: [
+    (0),
+    100000
+  ]
+  nightlyRate      : Decimal(12, 2) not null;
+
+  @assert.range: [
+    (0),
+    _
+  ]
+  totalAmount      : Decimal(12, 2) not null;
+
+  @assert.target
+  currency         : Currency not null;
+
+  paidAt           : Timestamp;
+  cancelledAt      : Timestamp;
+  completedAt      : Timestamp;
+
+  @assert.range: [
+    0,
+    _
+  ]
+  refundAmount     : Decimal(12, 2);
+
+  @assert.range: [
+    0,
+    _
+  ]
+  cancellationFee  : Decimal(12, 2);
 }

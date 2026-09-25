@@ -33,5 +33,6 @@ type BookingStatus : String(20) enum {
 type PaymentStatus : String(20) enum {
   Unpaid;
   Paid;
+  PartiallyRefunded;
   Refunded;
 };
