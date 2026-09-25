@@ -12,4 +12,37 @@ service CatalogService @(path: 'catalog') {
     }
     where
       isActive = true;
+
+  @readonly
+  entity Hotels  as
+    projection on db.Hotels {
+      ID,
+      name,
+      planet,
+      address,
+      description,
+      phoneNumber,
+      checkInTime,
+      checkOutTime,
+      rooms
+    }
+    where
+          isActive        = true
+      and planet.isActive = true;
+
+  @readonly
+  entity Rooms   as
+    projection on db.Rooms {
+      ID,
+      hotel,
+      number,
+      type,
+      capacity,
+      pricePerNight,
+      currency
+    }
+    where
+          isActive              = true
+      and hotel.isActive        = true
+      and hotel.planet.isActive = true;
 }
