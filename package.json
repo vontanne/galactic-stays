@@ -32,6 +32,18 @@
                 "Admin"
               ]
             },
+            "lando": {
+              "password": "lando",
+              "roles": [
+                "HotelManager"
+              ]
+            },
+            "boba": {
+              "password": "boba",
+              "roles": [
+                "HotelManager"
+              ]
+            },
             "anakin": {
               "password": "anakin",
               "roles": [

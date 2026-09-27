@@ -20,11 +20,7 @@ service BookingService @(path: 'booking') {
       where: (traveler.userId = $user)
     },
     {
-      grant: [
-        'READ',
-        'cancelByAdmin',
-        'complete'
-      ],
+      grant: 'READ',
       to   : 'Admin'
     }
   ]
@@ -103,10 +99,8 @@ service BookingService @(path: 'booking') {
       cancellationFee
     }
     actions {
-      action pay()           returns Bookings;
-      action cancel()        returns Bookings;
-      action cancelByAdmin() returns Bookings;
-      action complete()      returns Bookings;
+      action pay()    returns Bookings;
+      action cancel() returns Bookings;
     };
 
   @restrict: [

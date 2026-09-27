@@ -34,6 +34,8 @@ entity Travelers : cuid, managed {
   species     : Species not null;
 
   birthPlanet : Association to one Planets not null;
+  bookings    : Association to many Bookings
+                  on bookings.traveler = $self;
   isActive    : Boolean not null default true;
 }
 
@@ -42,16 +44,27 @@ entity Travelers : cuid, managed {
   name
 ]}
 entity Hotels : cuid, managed {
-  name         : String(150) not null;
-  planet       : Association to one Planets not null;
-  address      : String(255) not null;
-  description  : String(1000);
-  phoneNumber  : String(30) not null;
-  checkInTime  : Time not null;
-  checkOutTime : Time not null;
-  rooms        : Composition of many Rooms
-                   on rooms.hotel = $self;
-  isActive     : Boolean not null default true;
+  name                 : String(150) not null;
+  planet               : Association to one Planets not null;
+  address              : String(255) not null;
+  description          : String(1000);
+  phoneNumber          : String(30) not null;
+  checkInTime          : Time not null;
+  checkOutTime         : Time not null;
+  rooms                : Composition of many Rooms
+                           on rooms.hotel = $self;
+  managementAssignment : Association to one HotelManagementAssignments
+                           on managementAssignment.hotel = $self;
+  isActive             : Boolean not null default true;
+}
+
+@assert.unique: {
+  hotelAssignment  : [hotel],
+  managerAssignment: [userId]
+}
+entity HotelManagementAssignments : cuid, managed {
+  hotel  : Association to one Hotels not null;
+  userId : User not null;
 }
 
 @assert.unique: {roomNumberPerHotel: [

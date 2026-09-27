@@ -13,16 +13,20 @@ const { SELECT, UPDATE } = cds.ql;
 const FREE_CANCELLATION_DAYS = 3;
 const LATE_CANCELLATION_FEE_PERCENTAGE = 10;
 
-export function registerBookingCancellation(service) {
+export function registerTravelerBookingCancellation(service) {
+  registerCancellationHandler(service, determineTravelerCancellation);
+}
+
+export function registerHotelBookingCancellation(service) {
+  registerCancellationHandler(service, determineHotelCancellation);
+}
+
+function registerCancellationHandler(service, determineCancellation) {
   const { Bookings } = service.entities;
   const { Bookings: BookingRecords } = cds.entities("galactic.stays");
 
   service.on("cancel", Bookings, (req) =>
-    cancelBooking(req, Bookings, BookingRecords, determineTravelerCancellation),
-  );
-
-  service.on("cancelByAdmin", Bookings, (req) =>
-    cancelBooking(req, Bookings, BookingRecords, determineAdminCancellation),
+    cancelBooking(req, Bookings, BookingRecords, determineCancellation),
   );
 }
 
@@ -67,6 +71,7 @@ async function findBookingForUpdate(Bookings, bookingId) {
       "paymentStatus",
       "paymentExpiresAt",
       "checkInDate",
+      "checkOutDate",
       "totalAmount",
     )
     .where({ ID: bookingId })
@@ -74,6 +79,26 @@ async function findBookingForUpdate(Bookings, bookingId) {
 }
 
 function determineTravelerCancellation(booking, referenceDate) {
+  return determineCancellation(
+    booking,
+    referenceDate,
+    determineTravelerPaidCancellation,
+  );
+}
+
+function determineHotelCancellation(booking, referenceDate) {
+  return determineCancellation(
+    booking,
+    referenceDate,
+    determineHotelPaidCancellation,
+  );
+}
+
+function determineCancellation(
+  booking,
+  referenceDate,
+  determinePaidCancellation,
+) {
   if (booking.status === "Cancelled") {
     return {
       error: {
@@ -111,37 +136,6 @@ function determineTravelerCancellation(booking, referenceDate) {
   };
 }
 
-function determineAdminCancellation(booking) {
-  if (booking.status === "Cancelled") {
-    return {
-      error: {
-        status: 409,
-        code: "BOOKING_ALREADY_CANCELLED",
-        message: "Booking has already been cancelled.",
-      },
-    };
-  }
-
-  if (
-    booking.status === "AwaitingPayment" &&
-    booking.paymentStatus === "Unpaid"
-  ) {
-    return createUnpaidCancellation();
-  }
-
-  if (booking.status === "Confirmed" && booking.paymentStatus === "Paid") {
-    return createFullRefundCancellation(booking.totalAmount);
-  }
-
-  return {
-    error: {
-      status: 409,
-      code: "BOOKING_NOT_CANCELLABLE",
-      message: "Booking is not in a cancellable state.",
-    },
-  };
-}
-
 function determineUnpaidCancellation(booking, referenceDate) {
   if (booking.paymentStatus !== "Unpaid") {
     return {
@@ -166,17 +160,10 @@ function determineUnpaidCancellation(booking, referenceDate) {
   return createUnpaidCancellation();
 }
 
-function determinePaidCancellation(booking, referenceDate) {
-  const currentDate = toUtcCalendarDate(referenceDate);
-  const checkInDate = parseDateOnly(booking.checkInDate);
-
-  if (!checkInDate) {
-    throw new TypeError("Stored booking check-in date is invalid.");
-  }
-
-  const daysUntilCheckIn = calculateCalendarDaysBetween(
-    currentDate,
-    checkInDate,
+function determineTravelerPaidCancellation(booking, referenceDate) {
+  const daysUntilCheckIn = calculateDaysUntil(
+    booking.checkInDate,
+    referenceDate,
   );
 
   if (daysUntilCheckIn <= 0) {
@@ -205,6 +192,36 @@ function determinePaidCancellation(booking, referenceDate) {
       cancellationFee,
     },
   };
+}
+
+function determineHotelPaidCancellation(booking, referenceDate) {
+  const daysUntilCheckOut = calculateDaysUntil(
+    booking.checkOutDate,
+    referenceDate,
+  );
+
+  if (daysUntilCheckOut <= 0) {
+    return {
+      error: {
+        status: 409,
+        code: "CANCELLATION_PERIOD_ENDED",
+        message:
+          "A booking cannot be cancelled on or after its check-out date.",
+      },
+    };
+  }
+
+  return createFullRefundCancellation(booking.totalAmount);
+}
+
+function calculateDaysUntil(dateValue, referenceDate) {
+  const date = parseDateOnly(dateValue);
+
+  if (!date) {
+    throw new TypeError(`Stored booking date is invalid: ${dateValue}`);
+  }
+
+  return calculateCalendarDaysBetween(toUtcCalendarDate(referenceDate), date);
 }
 
 function createUnpaidCancellation() {
