@@ -17,33 +17,46 @@ export function registerBookingCancellation(service) {
   const { Bookings } = service.entities;
   const { Bookings: BookingRecords } = cds.entities("galactic.stays");
 
-  service.on("cancel", Bookings, async (req) => {
-    const [{ ID: bookingId }] = req.params;
+  service.on("cancel", Bookings, (req) =>
+    cancelBooking(req, Bookings, BookingRecords, determineTravelerCancellation),
+  );
 
-    const booking = await findBookingForUpdate(BookingRecords, bookingId);
+  service.on("cancelByAdmin", Bookings, (req) =>
+    cancelBooking(req, Bookings, BookingRecords, determineAdminCancellation),
+  );
+}
 
-    if (!booking) {
-      req.reject({
-        status: 404,
-        code: "BOOKING_NOT_FOUND",
-        message: "Booking was not found.",
-      });
-    }
+async function cancelBooking(
+  req,
+  Bookings,
+  BookingRecords,
+  determineCancellation,
+) {
+  const [{ ID: bookingId }] = req.params;
 
-    const cancellation = determineCancellation(booking, req.timestamp);
+  const booking = await findBookingForUpdate(BookingRecords, bookingId);
 
-    if (cancellation.error) req.reject(cancellation.error);
+  if (!booking) {
+    req.reject({
+      status: 404,
+      code: "BOOKING_NOT_FOUND",
+      message: "Booking was not found.",
+    });
+  }
 
-    await UPDATE(BookingRecords)
-      .set({
-        ...cancellation.changes,
-        status: "Cancelled",
-        cancelledAt: req.timestamp,
-      })
-      .where({ ID: bookingId });
+  const cancellation = determineCancellation(booking, req.timestamp);
 
-    return SELECT.one.from(Bookings).where({ ID: bookingId });
-  });
+  if (cancellation.error) req.reject(cancellation.error);
+
+  await UPDATE(BookingRecords)
+    .set({
+      ...cancellation.changes,
+      status: "Cancelled",
+      cancelledAt: req.timestamp,
+    })
+    .where({ ID: bookingId });
+
+  return SELECT.one.from(Bookings).where({ ID: bookingId });
 }
 
 async function findBookingForUpdate(Bookings, bookingId) {
@@ -60,7 +73,7 @@ async function findBookingForUpdate(Bookings, bookingId) {
     .forUpdate();
 }
 
-function determineCancellation(booking, referenceDate) {
+function determineTravelerCancellation(booking, referenceDate) {
   if (booking.status === "Cancelled") {
     return {
       error: {
@@ -98,6 +111,37 @@ function determineCancellation(booking, referenceDate) {
   };
 }
 
+function determineAdminCancellation(booking) {
+  if (booking.status === "Cancelled") {
+    return {
+      error: {
+        status: 409,
+        code: "BOOKING_ALREADY_CANCELLED",
+        message: "Booking has already been cancelled.",
+      },
+    };
+  }
+
+  if (
+    booking.status === "AwaitingPayment" &&
+    booking.paymentStatus === "Unpaid"
+  ) {
+    return createUnpaidCancellation();
+  }
+
+  if (booking.status === "Confirmed" && booking.paymentStatus === "Paid") {
+    return createFullRefundCancellation(booking.totalAmount);
+  }
+
+  return {
+    error: {
+      status: 409,
+      code: "BOOKING_NOT_CANCELLABLE",
+      message: "Booking is not in a cancellable state.",
+    },
+  };
+}
+
 function determineUnpaidCancellation(booking, referenceDate) {
   if (booking.paymentStatus !== "Unpaid") {
     return {
@@ -119,13 +163,7 @@ function determineUnpaidCancellation(booking, referenceDate) {
     };
   }
 
-  return {
-    changes: {
-      paymentStatus: "Unpaid",
-      refundAmount: null,
-      cancellationFee: null,
-    },
-  };
+  return createUnpaidCancellation();
 }
 
 function determinePaidCancellation(booking, referenceDate) {
@@ -152,13 +190,7 @@ function determinePaidCancellation(booking, referenceDate) {
   }
 
   if (daysUntilCheckIn >= FREE_CANCELLATION_DAYS) {
-    return {
-      changes: {
-        paymentStatus: "Refunded",
-        refundAmount: booking.totalAmount,
-        cancellationFee: "0.00",
-      },
-    };
+    return createFullRefundCancellation(booking.totalAmount);
   }
 
   const cancellationFee = calculatePercentageAmount(
@@ -171,6 +203,26 @@ function determinePaidCancellation(booking, referenceDate) {
       paymentStatus: "PartiallyRefunded",
       refundAmount: subtractAmounts(booking.totalAmount, cancellationFee),
       cancellationFee,
+    },
+  };
+}
+
+function createUnpaidCancellation() {
+  return {
+    changes: {
+      paymentStatus: "Unpaid",
+      refundAmount: null,
+      cancellationFee: null,
+    },
+  };
+}
+
+function createFullRefundCancellation(totalAmount) {
+  return {
+    changes: {
+      paymentStatus: "Refunded",
+      refundAmount: totalAmount,
+      cancellationFee: "0.00",
     },
   };
 }
