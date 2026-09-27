@@ -1,9 +1,10 @@
 import cds from "@sap/cds";
 
+import { parseDateOnly } from "./booking/date-time.js";
+
 const { SELECT } = cds.ql;
 
 const MINIMUM_AGE = 18;
-const ISO_DATE_PATTERN = /^(\d{4})-(\d{2})-(\d{2})$/;
 
 export class TravelerService extends cds.ApplicationService {
   init() {
@@ -17,7 +18,16 @@ export class TravelerService extends cds.ApplicationService {
 
       const age = calculateAge(dateOfBirth, req.timestamp);
 
-      if (age !== undefined && age < MINIMUM_AGE) {
+      if (age === undefined) {
+        req.reject({
+          status: 400,
+          code: "INVALID_DATE_OF_BIRTH",
+          message: "Date of birth must be a valid ISO date.",
+          target: "dateOfBirth",
+        });
+      }
+
+      if (age < MINIMUM_AGE) {
         req.reject({
           status: 400,
           code: "TRAVELER_MINIMUM_AGE",
@@ -56,6 +66,19 @@ export class TravelerService extends cds.ApplicationService {
     });
 
     this.before("UPDATE", Travelers, async (req) => {
+      const travelerIsActive = await activeTravelerExists(
+        TravelerProfiles,
+        req.data.ID,
+      );
+
+      if (!travelerIsActive) {
+        req.reject({
+          status: 403,
+          code: "TRAVELER_INACTIVE",
+          message: "An inactive traveler profile cannot be updated.",
+        });
+      }
+
       if (!Object.hasOwn(req.data, "birthPlanet_ID")) return;
 
       const birthPlanetId = req.data.birthPlanet_ID;
@@ -87,6 +110,15 @@ async function travelerProfileExists(Travelers, userId) {
   return profile != null;
 }
 
+async function activeTravelerExists(Travelers, travelerId) {
+  const traveler = await SELECT.one.from(Travelers).columns("ID").where({
+    ID: travelerId,
+    isActive: true,
+  });
+
+  return traveler != null;
+}
+
 async function activePlanetExists(Planets, planetId) {
   const planet = await SELECT.one.from(Planets).columns("ID").where({
     ID: planetId,
@@ -97,28 +129,16 @@ async function activePlanetExists(Planets, planetId) {
 }
 
 function calculateAge(dateOfBirth, referenceDate) {
-  if (typeof dateOfBirth !== "string") return undefined;
+  const birthDate = parseDateOnly(dateOfBirth);
+  if (!birthDate) return undefined;
 
-  const match = ISO_DATE_PATTERN.exec(dateOfBirth);
-  if (!match) return undefined;
-
-  const [, yearValue, monthValue, dayValue] = match;
-  const birthYear = Number(yearValue);
-  const birthMonth = Number(monthValue);
-  const birthDay = Number(dayValue);
-
-  const birthDate = new Date(Date.UTC(birthYear, birthMonth - 1, birthDay));
-
-  const dateIsValid =
-    birthDate.getUTCFullYear() === birthYear &&
-    birthDate.getUTCMonth() === birthMonth - 1 &&
-    birthDate.getUTCDate() === birthDay;
-
-  if (!dateIsValid) return undefined;
+  const birthYear = birthDate.getUTCFullYear();
+  const birthMonth = birthDate.getUTCMonth();
+  const birthDay = birthDate.getUTCDate();
 
   let age = referenceDate.getUTCFullYear() - birthYear;
 
-  const currentMonth = referenceDate.getUTCMonth() + 1;
+  const currentMonth = referenceDate.getUTCMonth();
   const currentDay = referenceDate.getUTCDate();
 
   const birthdayHasNotOccurred =
