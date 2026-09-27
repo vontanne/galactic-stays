@@ -1,12 +1,17 @@
 import cds from "@sap/cds";
 
+import {
+  addMinutes,
+  calculateCalendarDaysBetween,
+  parseDateOnly,
+  toUtcCalendarDate,
+} from "./date-time.js";
+import { multiplyAmount } from "./money.js";
+
 const { SELECT } = cds.ql;
 
 const MAXIMUM_STAY_NIGHTS = 30;
 const PAYMENT_HOLD_MINUTES = 15;
-const MILLISECONDS_PER_DAY = 86_400_000;
-const MINOR_UNIT_FACTOR = 100n;
-const ISO_DATE_PATTERN = /^(\d{4})-(\d{2})-(\d{2})$/;
 
 export function registerBookingCreation(service) {
   const { Bookings } = service.entities;
@@ -90,10 +95,7 @@ export function registerBookingCreation(service) {
       checkOutTime: hotel.checkOutTime,
       paymentExpiresAt: addMinutes(req.timestamp, PAYMENT_HOLD_MINUTES),
       nightlyRate: room.pricePerNight,
-      totalAmount: calculateTotalAmount(
-        room.pricePerNight,
-        stay.numberOfNights,
-      ),
+      totalAmount: multiplyAmount(room.pricePerNight, stay.numberOfNights),
       currency_code: room.currency_code,
     });
   });
@@ -185,7 +187,7 @@ function validateStayPeriod(
     };
   }
 
-  const currentDate = getUtcCalendarDate(referenceDate);
+  const currentDate = toUtcCalendarDate(referenceDate);
 
   if (checkInDate < currentDate) {
     return {
@@ -198,7 +200,10 @@ function validateStayPeriod(
     };
   }
 
-  const numberOfNights = calculateNumberOfNights(checkInDate, checkOutDate);
+  const numberOfNights = calculateCalendarDaysBetween(
+    checkInDate,
+    checkOutDate,
+  );
 
   if (numberOfNights <= 0) {
     return {
@@ -223,69 +228,4 @@ function validateStayPeriod(
   }
 
   return { numberOfNights };
-}
-
-function parseDateOnly(value) {
-  if (typeof value !== "string") return undefined;
-
-  const match = ISO_DATE_PATTERN.exec(value);
-  if (!match) return undefined;
-
-  const [, yearValue, monthValue, dayValue] = match;
-  const year = Number(yearValue);
-  const month = Number(monthValue);
-  const day = Number(dayValue);
-  const date = new Date(Date.UTC(year, month - 1, day));
-
-  const dateIsValid =
-    date.getUTCFullYear() === year &&
-    date.getUTCMonth() === month - 1 &&
-    date.getUTCDate() === day;
-
-  return dateIsValid ? date : undefined;
-}
-
-function getUtcCalendarDate(timestamp) {
-  return new Date(
-    Date.UTC(
-      timestamp.getUTCFullYear(),
-      timestamp.getUTCMonth(),
-      timestamp.getUTCDate(),
-    ),
-  );
-}
-
-function calculateNumberOfNights(checkInDate, checkOutDate) {
-  return (checkOutDate - checkInDate) / MILLISECONDS_PER_DAY;
-}
-
-function addMinutes(date, minutes) {
-  return new Date(date.getTime() + minutes * 60_000);
-}
-
-function calculateTotalAmount(nightlyRate, numberOfNights) {
-  const nightlyRateInMinorUnits = parseMinorUnits(nightlyRate);
-  const totalInMinorUnits = nightlyRateInMinorUnits * BigInt(numberOfNights);
-
-  return formatMinorUnits(totalInMinorUnits);
-}
-
-function parseMinorUnits(amount) {
-  const match = /^(\d+)(?:\.(\d{1,2}))?$/.exec(String(amount));
-
-  if (!match) {
-    throw new TypeError(`Invalid monetary amount: ${amount}`);
-  }
-
-  const [, wholeUnits, fraction = ""] = match;
-  const minorUnits = fraction.padEnd(2, "0");
-
-  return BigInt(wholeUnits) * MINOR_UNIT_FACTOR + BigInt(minorUnits);
-}
-
-function formatMinorUnits(amount) {
-  const wholeUnits = amount / MINOR_UNIT_FACTOR;
-  const minorUnits = amount % MINOR_UNIT_FACTOR;
-
-  return `${wholeUnits}.${minorUnits.toString().padStart(2, "0")}`;
 }

@@ -1,5 +1,7 @@
 import cds from "@sap/cds";
 
+import { isDeadlineReached } from "./date-time.js";
+
 const { SELECT, UPDATE } = cds.ql;
 
 export function registerBookingPayment(service) {
@@ -46,7 +48,7 @@ export function registerBookingPayment(service) {
       });
     }
 
-    if (hasPaymentWindowExpired(booking.paymentExpiresAt, req.timestamp)) {
+    if (isDeadlineReached(booking.paymentExpiresAt, req.timestamp)) {
       req.reject({
         status: 409,
         code: "PAYMENT_WINDOW_EXPIRED",
@@ -72,8 +74,4 @@ async function findBookingForUpdate(Bookings, bookingId) {
     .columns("status", "paymentStatus", "paymentExpiresAt")
     .where({ ID: bookingId })
     .forUpdate();
-}
-
-function hasPaymentWindowExpired(paymentExpiresAt, referenceDate) {
-  return new Date(paymentExpiresAt).getTime() <= referenceDate.getTime();
 }
