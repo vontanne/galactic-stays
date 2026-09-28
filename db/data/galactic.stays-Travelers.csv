@@ -1,0 +1,2 @@
+ID;userId;firstName;lastName;dateOfBirth;species;birthPlanet_ID;isActive
+5fc24eca-01ba-42c0-998f-c14b1e8509ab;anakin;Anakin;Skywalker;1995-04-12;Human;10f11185-ee89-4caf-8cb0-5c8c37a6cdfa;true
