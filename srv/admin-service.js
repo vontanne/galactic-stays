@@ -3,6 +3,7 @@ import cds from "@sap/cds";
 import { registerAssignmentRules } from "./admin/assignment-rules.js";
 import { registerHotelRules } from "./admin/hotel-rules.js";
 import { registerPlanetRules } from "./admin/planet-rules.js";
+import { registerPlanetSync } from "./admin/planet-sync.js";
 import { registerRoomRules } from "./admin/room-rules.js";
 
 export class AdminService extends cds.ApplicationService {
@@ -11,6 +12,7 @@ export class AdminService extends cds.ApplicationService {
     registerHotelRules(this);
     registerRoomRules(this);
     registerAssignmentRules(this);
+    registerPlanetSync(this);
 
     return super.init();
   }

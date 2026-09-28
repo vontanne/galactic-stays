@@ -110,4 +110,13 @@ service AdminService @(path: 'admin') {
 
       isActive
     };
+
+  type PlanetSyncResult {
+    fetched   : Integer;
+    created   : Integer;
+    updated   : Integer;
+    unchanged : Integer;
+  }
+
+  action syncPlanetsFromSwapi() returns PlanetSyncResult;
 }
