@@ -9,48 +9,14 @@ import {
 
 export function registerRoomRules(service) {
   const { Rooms } = service.entities;
-  const {
-    Hotels: HotelRecords,
-    Rooms: RoomRecords,
-    Bookings: BookingRecords,
-  } = cds.entities("galactic.stays");
+  const { Bookings: BookingRecords } = cds.entities("galactic.stays");
 
   service.before("CREATE", Rooms, async (req) => {
-    const hotelId = req.data.hotel_ID;
-
-    const hotelExists =
-      hotelId != null && (await recordExists(HotelRecords, { ID: hotelId }));
-
-    if (!hotelExists) {
-      req.reject({
-        status: 400,
-        code: "INVALID_HOTEL",
-        message: "Room must belong to an existing hotel.",
-        target: "hotel_ID",
-      });
-    }
+    await validateRoomHotel(req);
+    await validateRoomNumber(req);
   });
 
-  service.before(["CREATE", "UPDATE"], Rooms, async (req) => {
-    if (!Object.hasOwn(req.data, "number")) return;
-
-    const room = await withStoredValues(req, RoomRecords, ["hotel_ID"]);
-
-    const numberIsTaken = await otherRecordExists(
-      RoomRecords,
-      { hotel_ID: room.hotel_ID, number: room.number },
-      req.data.ID,
-    );
-
-    if (numberIsTaken) {
-      req.reject({
-        status: 409,
-        code: "ROOM_NUMBER_EXISTS",
-        message: "Room numbers must be unique within a hotel.",
-        target: "number",
-      });
-    }
-  });
+  service.before("UPDATE", Rooms, validateRoomNumber);
 
   service.before("DELETE", Rooms, async (req) => {
     if (await roomsHaveBookings(BookingRecords, [req.data.ID])) {
@@ -62,4 +28,43 @@ export function registerRoomRules(service) {
       });
     }
   });
+}
+
+async function validateRoomHotel(req) {
+  const { Hotels: HotelRecords } = cds.entities("galactic.stays");
+  const hotelId = req.data.hotel_ID;
+
+  const hotelExists =
+    hotelId != null && (await recordExists(HotelRecords, { ID: hotelId }));
+
+  if (!hotelExists) {
+    req.reject({
+      status: 400,
+      code: "INVALID_HOTEL",
+      message: "Room must belong to an existing hotel.",
+      target: "hotel_ID",
+    });
+  }
+}
+
+export async function validateRoomNumber(req) {
+  if (!Object.hasOwn(req.data, "number")) return;
+
+  const { Rooms: RoomRecords } = cds.entities("galactic.stays");
+  const room = await withStoredValues(req, RoomRecords, ["hotel_ID"]);
+
+  const numberIsTaken = await otherRecordExists(
+    RoomRecords,
+    { hotel_ID: room.hotel_ID, number: room.number },
+    req.data.ID,
+  );
+
+  if (numberIsTaken) {
+    req.reject({
+      status: 409,
+      code: "ROOM_NUMBER_EXISTS",
+      message: "Room numbers must be unique within a hotel.",
+      target: "number",
+    });
+  }
 }

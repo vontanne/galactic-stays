@@ -72,4 +72,80 @@ service HotelManagementService @(path: 'hotel-management') {
       lastName,
       bookings : redirected to db.Bookings
     };
+
+  @readonly
+  @restrict: [
+    {
+      grant: 'READ',
+      to   : 'HotelManager',
+      where: (managementAssignment.userId = $user)
+    },
+    {
+      grant: 'READ',
+      to   : 'Admin'
+    }
+  ]
+  entity Hotels    as
+    projection on db.Hotels {
+      ID,
+      name,
+      planet.name as planetName,
+      address,
+      description,
+      phoneNumber,
+      checkInTime,
+      checkOutTime,
+      rooms,
+      managementAssignment,
+      isActive
+    };
+
+  @restrict: [
+    {
+      grant: [
+        'READ',
+        'UPDATE'
+      ],
+      to   : 'HotelManager',
+      where: (hotel.managementAssignment.userId = $user)
+    },
+    {
+      grant: 'CREATE',
+      to   : 'HotelManager'
+    },
+    {
+      grant: [
+        'READ',
+        'UPDATE'
+      ],
+      to   : 'Admin'
+    }
+  ]
+  entity Rooms     as
+    projection on db.Rooms {
+      ID,
+
+      @readonly
+      hotel,
+
+      @mandatory
+      @Core.Immutable
+      number,
+
+      @mandatory
+      @Core.Immutable
+      type,
+
+      @mandatory
+      @Core.Immutable
+      capacity,
+
+      @mandatory
+      pricePerNight,
+
+      @readonly
+      currency,
+
+      isActive
+    };
 }
