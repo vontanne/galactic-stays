@@ -2,6 +2,9 @@
   "name": "galactic-stays",
   "version": "1.0.0",
   "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
   "dependencies": {
     "@sap/cds": "^10"
   },

@@ -30,7 +30,6 @@ entity Travelers : cuid, managed {
   lastName    : String(100) not null;
   dateOfBirth : Date not null;
 
-  @assert.range: true
   species     : Species not null;
 
   birthPlanet : Association to one Planets not null;
@@ -79,7 +78,6 @@ entity Rooms : cuid, managed {
   hotel         : Association to one Hotels not null;
   number        : String(20) not null;
 
-  @assert.range: true
   type          : RoomType not null;
 
   @assert.range: [
@@ -118,10 +116,8 @@ entity Bookings : cuid, managed {
 
   specialRequests  : String(1000);
 
-  @assert.range: true
   status           : BookingStatus not null default #AwaitingPayment;
 
-  @assert.range: true
   paymentStatus    : PaymentStatus not null default #Unpaid;
 
   paymentExpiresAt : Timestamp not null;
