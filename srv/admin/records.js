@@ -16,6 +16,20 @@ export async function otherRecordExists(entity, conditions, ownId) {
   return (await query) != null;
 }
 
+export async function otherRecordWithNameExists(
+  entity,
+  name,
+  conditions,
+  ownId,
+) {
+  const query = SELECT.one.from(entity).columns("ID")
+    .where`tolower(name) = ${String(name).toLowerCase()}`.where(conditions);
+
+  if (ownId != null) query.where({ ID: { "!=": ownId } });
+
+  return (await query) != null;
+}
+
 export async function withStoredValues(req, entity, columns) {
   if (req.event === "CREATE") return req.data;
 

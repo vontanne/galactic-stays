@@ -2,7 +2,7 @@ import cds from "@sap/cds";
 
 import {
   findHotelRoomIds,
-  otherRecordExists,
+  otherRecordWithNameExists,
   recordExists,
   roomsHaveBookings,
   withStoredValues,
@@ -51,9 +51,10 @@ export function registerHotelRules(service) {
       "planet_ID",
     ]);
 
-    const nameIsTaken = await otherRecordExists(
+    const nameIsTaken = await otherRecordWithNameExists(
       HotelRecords,
-      { name: hotel.name, planet_ID: hotel.planet_ID },
+      hotel.name,
+      { planet_ID: hotel.planet_ID },
       req.data.ID,
     );
 

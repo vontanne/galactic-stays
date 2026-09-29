@@ -33,7 +33,6 @@ service BookingService @(path: 'booking') {
 
       @mandatory
       @Core.Immutable
-      @assert.target
       room,
 
       @mandatory
@@ -45,10 +44,6 @@ service BookingService @(path: 'booking') {
 
       @mandatory
       @Core.Immutable
-      @assert: (case
-                  when checkOutDate <= checkInDate
-                       then 'Check-out date must be after check-in date.'
-                end)
       checkOutDate,
 
       @readonly
@@ -58,7 +53,7 @@ service BookingService @(path: 'booking') {
       @Core.Immutable
       @assert: (case
                   when guestCount > room.capacity
-                       then 'Guest count exceeds room capacity.'
+                       then 'GUEST_COUNT_EXCEEDS_CAPACITY'
                 end)
       guestCount,
 

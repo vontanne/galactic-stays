@@ -1,6 +1,6 @@
 import cds from "@sap/cds";
 
-import { otherRecordExists, recordExists } from "./records.js";
+import { otherRecordWithNameExists, recordExists } from "./records.js";
 
 export function registerPlanetRules(service) {
   const { Planets } = service.entities;
@@ -13,9 +13,10 @@ export function registerPlanetRules(service) {
   service.before(["CREATE", "UPDATE"], Planets, async (req) => {
     if (!Object.hasOwn(req.data, "name")) return;
 
-    const nameIsTaken = await otherRecordExists(
+    const nameIsTaken = await otherRecordWithNameExists(
       PlanetRecords,
-      { name: req.data.name },
+      req.data.name,
+      {},
       req.data.ID,
     );
 
