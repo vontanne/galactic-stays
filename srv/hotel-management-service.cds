@@ -89,15 +89,43 @@ service HotelManagementService @(path: 'hotel-management') {
     projection on db.Hotels {
       ID,
       name,
-      planet.name as planetName,
+      planet.name          as planetName,
       address,
       description,
       phoneNumber,
       checkInTime,
       checkOutTime,
       rooms,
+      reviews,
+      rating.averageRating as averageRating,
+      coalesce(
+        rating.reviewCount, 0
+      )                    as reviewCount : Integer,
       managementAssignment,
       isActive
+    };
+
+  @readonly
+  @restrict: [
+    {
+      grant: 'READ',
+      to   : 'HotelManager',
+      where: (hotel.managementAssignment.userId = $user)
+    },
+    {
+      grant: 'READ',
+      to   : 'Admin'
+    }
+  ]
+  entity Reviews   as
+    projection on db.Reviews {
+      ID,
+      hotel,
+      rating,
+      comment,
+      traveler.firstName as authorName,
+      createdAt,
+      modifiedAt
     };
 
   @restrict: [

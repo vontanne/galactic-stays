@@ -24,11 +24,31 @@ service CatalogService @(path: 'catalog') {
       phoneNumber,
       checkInTime,
       checkOutTime,
-      rooms
+      rooms,
+      reviews,
+      rating.averageRating as averageRating,
+      coalesce(
+        rating.reviewCount, 0
+      )                    as reviewCount : Integer
     }
     where
           isActive        = true
       and planet.isActive = true;
+
+  @readonly
+  entity Reviews as
+    projection on db.Reviews {
+      ID,
+      hotel,
+      rating,
+      comment,
+      traveler.firstName as authorName,
+      createdAt,
+      modifiedAt
+    }
+    where
+          hotel.isActive        = true
+      and hotel.planet.isActive = true;
 
   @readonly
   entity Rooms   as

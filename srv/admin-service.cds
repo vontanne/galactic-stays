@@ -41,7 +41,30 @@ service AdminService @(path: 'admin') {
 
       rooms,
       managementAssignment,
+      reviews,
+      rating.averageRating as averageRating,
+      coalesce(
+        rating.reviewCount, 0
+      )                    as reviewCount : Integer,
       isActive
+    };
+
+  @restrict: [{
+    grant: [
+      'READ',
+      'DELETE'
+    ],
+    to   : 'Admin'
+  }]
+  entity Reviews                    as
+    projection on db.Reviews {
+      ID,
+      hotel,
+      traveler,
+      rating,
+      comment,
+      createdAt,
+      modifiedAt
     };
 
   entity Rooms                      as

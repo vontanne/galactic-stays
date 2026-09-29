@@ -163,6 +163,40 @@ service BookingService @(path: 'booking') {
       and hotel.isActive        = true
       and hotel.planet.isActive = true;
 
+  @restrict: [
+    {
+      grant: 'CREATE',
+      to   : 'Traveler'
+    },
+    {
+      grant: [
+        'READ',
+        'UPDATE',
+        'DELETE'
+      ],
+      to   : 'Traveler',
+      where: (traveler.userId = $user)
+    }
+  ]
+  entity Reviews   as
+    projection on db.Reviews {
+      ID,
+
+      @mandatory
+      @Core.Immutable
+      hotel,
+
+      @readonly
+      traveler,
+
+      @mandatory
+      rating,
+
+      comment,
+      createdAt,
+      modifiedAt
+    };
+
   @requires: 'Admin'
   action expireUnpaidBookings() returns Integer;
 }

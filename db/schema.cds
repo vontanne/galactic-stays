@@ -55,6 +55,10 @@ entity Hotels : cuid, managed {
                            on rooms.hotel = $self;
   managementAssignment : Association to one HotelManagementAssignments
                            on managementAssignment.hotel = $self;
+  reviews              : Association to many Reviews
+                           on reviews.hotel = $self;
+  rating               : Association to one HotelRatings
+                           on rating.hotel = $self;
   isActive             : Boolean not null default true;
 }
 
@@ -153,3 +157,31 @@ entity Bookings : cuid, managed {
   ]
   cancellationFee  : Decimal(12, 2);
 }
+
+@assert.unique: {reviewPerTravelerAndHotel: [
+  traveler,
+  hotel
+]}
+entity Reviews : cuid, managed {
+  hotel    : Association to one Hotels not null;
+  traveler : Association to one Travelers not null;
+
+  @assert.range: [
+    1,
+    5
+  ]
+  rating   : Integer not null;
+
+  comment  : String(1000);
+}
+
+entity HotelRatings as
+  select from Reviews {
+    key hotel,
+        round(
+          avg(rating), 1
+        )        as averageRating : Decimal(2, 1),
+        count(1) as reviewCount   : Integer
+  }
+  group by
+    hotel;
