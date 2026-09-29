@@ -5,6 +5,7 @@ import {
   otherRecordWithNameExists,
   recordExists,
   roomsHaveBookings,
+  upcomingBookingExceedsCapacity,
   withStoredValues,
 } from "./records.js";
 
@@ -46,6 +47,8 @@ export function registerHotelRules(service) {
       return;
     }
 
+    if (Object.hasOwn(req.data, "name")) req.data.name = req.data.name.trim();
+
     const hotel = await withStoredValues(req, HotelRecords, [
       "name",
       "planet_ID",
@@ -70,6 +73,10 @@ export function registerHotelRules(service) {
 
   service.before(["CREATE", "UPDATE"], Hotels, async (req) => {
     if (!Array.isArray(req.data.rooms)) return;
+
+    for (const room of req.data.rooms) {
+      if (typeof room.number === "string") room.number = room.number.trim();
+    }
 
     const roomNumbers = await resolveRoomNumbers(RoomRecords, req.data.rooms);
 
@@ -98,6 +105,33 @@ export function registerHotelRules(service) {
           "A room with bookings cannot be deleted. Deactivate it instead.",
         target: "rooms",
       });
+    }
+  });
+
+  service.before("UPDATE", Hotels, async (req) => {
+    if (!Array.isArray(req.data.rooms)) return;
+
+    const today = req.timestamp.toISOString().slice(0, 10);
+
+    for (const room of req.data.rooms) {
+      if (room.ID == null || room.capacity == null) continue;
+
+      const capacityIsTooLow = await upcomingBookingExceedsCapacity(
+        BookingRecords,
+        room.ID,
+        room.capacity,
+        today,
+      );
+
+      if (capacityIsTooLow) {
+        req.reject({
+          status: 409,
+          code: "ROOM_CAPACITY_TOO_LOW",
+          message:
+            "Room capacity cannot be lower than the guest count of an upcoming booking.",
+          target: "rooms",
+        });
+      }
     }
   });
 

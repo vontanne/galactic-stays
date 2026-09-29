@@ -13,6 +13,8 @@ export function registerPlanetRules(service) {
   service.before(["CREATE", "UPDATE"], Planets, async (req) => {
     if (!Object.hasOwn(req.data, "name")) return;
 
+    req.data.name = req.data.name.trim();
+
     const nameIsTaken = await otherRecordWithNameExists(
       PlanetRecords,
       req.data.name,

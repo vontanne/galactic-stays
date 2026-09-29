@@ -4,6 +4,7 @@ import {
   otherRecordExists,
   recordExists,
   roomsHaveBookings,
+  upcomingBookingExceedsCapacity,
   withStoredValues,
 } from "./records.js";
 
@@ -17,6 +18,27 @@ export function registerRoomRules(service) {
   });
 
   service.before("UPDATE", Rooms, validateRoomNumber);
+
+  service.before("UPDATE", Rooms, async (req) => {
+    if (req.data.capacity == null) return;
+
+    const capacityIsTooLow = await upcomingBookingExceedsCapacity(
+      BookingRecords,
+      req.data.ID,
+      req.data.capacity,
+      req.timestamp.toISOString().slice(0, 10),
+    );
+
+    if (capacityIsTooLow) {
+      req.reject({
+        status: 409,
+        code: "ROOM_CAPACITY_TOO_LOW",
+        message:
+          "Room capacity cannot be lower than the guest count of an upcoming booking.",
+        target: "capacity",
+      });
+    }
+  });
 
   service.before("DELETE", Rooms, async (req) => {
     if (await roomsHaveBookings(BookingRecords, [req.data.ID])) {
@@ -49,6 +71,8 @@ async function validateRoomHotel(req) {
 
 export async function validateRoomNumber(req) {
   if (!Object.hasOwn(req.data, "number")) return;
+
+  req.data.number = req.data.number.trim();
 
   const { Rooms: RoomRecords } = cds.entities("galactic.stays");
   const room = await withStoredValues(req, RoomRecords, ["hotel_ID"]);

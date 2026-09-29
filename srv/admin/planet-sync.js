@@ -50,8 +50,9 @@ async function synchronizePlanets(Planets, swapiPlanets) {
     const storedPlanet = storedByName.get(swapiPlanet.name.toLowerCase());
 
     if (!storedPlanet) {
-      newPlanets.push({ ID: cds.utils.uuid(), ...swapiPlanet });
-      storedByName.set(swapiPlanet.name.toLowerCase(), swapiPlanet);
+      const newPlanet = { ID: cds.utils.uuid(), ...swapiPlanet };
+      newPlanets.push(newPlanet);
+      storedByName.set(swapiPlanet.name.toLowerCase(), newPlanet);
       continue;
     }
 

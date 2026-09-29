@@ -54,3 +54,19 @@ export async function roomsHaveBookings(Bookings, roomIds) {
 
   return recordExists(Bookings, { room_ID: roomIds });
 }
+
+export async function upcomingBookingExceedsCapacity(
+  Bookings,
+  roomId,
+  capacity,
+  today,
+) {
+  const booking = await SELECT.one.from(Bookings).columns("ID").where`
+      room_ID = ${roomId}
+      and guestCount > ${capacity}
+      and status in ('AwaitingPayment', 'Confirmed')
+      and checkOutDate > ${today}
+    `;
+
+  return booking != null;
+}

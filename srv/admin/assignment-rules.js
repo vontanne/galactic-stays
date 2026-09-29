@@ -1,16 +1,26 @@
 import cds from "@sap/cds";
 
-import { otherRecordExists, withStoredValues } from "./records.js";
+import {
+  otherRecordExists,
+  recordExists,
+  withStoredValues,
+} from "./records.js";
 
 export function registerAssignmentRules(service) {
   const { HotelManagementAssignments } = service.entities;
-  const { HotelManagementAssignments: AssignmentRecords } =
-    cds.entities("galactic.stays");
+  const {
+    HotelManagementAssignments: AssignmentRecords,
+    Travelers: TravelerRecords,
+  } = cds.entities("galactic.stays");
 
   service.before(
     ["CREATE", "UPDATE"],
     HotelManagementAssignments,
     async (req) => {
+      if (Object.hasOwn(req.data, "userId")) {
+        req.data.userId = req.data.userId.trim();
+      }
+
       const assignment = await withStoredValues(req, AssignmentRecords, [
         "hotel_ID",
         "userId",
@@ -42,6 +52,19 @@ export function registerAssignmentRules(service) {
           status: 409,
           code: "MANAGER_ALREADY_ASSIGNED",
           message: "This manager is already assigned to a hotel.",
+          target: "userId",
+        });
+      }
+
+      const userIsTraveler = await recordExists(TravelerRecords, {
+        userId: assignment.userId,
+      });
+
+      if (userIsTraveler) {
+        req.reject({
+          status: 409,
+          code: "MANAGER_IS_TRAVELER",
+          message: "A traveler cannot be assigned as a hotel manager.",
           target: "userId",
         });
       }
