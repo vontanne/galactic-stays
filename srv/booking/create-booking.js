@@ -41,19 +41,11 @@ export function registerBookingCreation(service) {
     const traveler = await findTravelerProfile(Travelers, req.user.id);
 
     if (!traveler) {
-      req.reject({
-        status: 409,
-        code: "TRAVELER_PROFILE_REQUIRED",
-        message: "Create a traveler profile before booking a room.",
-      });
+      req.reject(409, "TRAVELER_PROFILE_REQUIRED");
     }
 
     if (!traveler.isActive) {
-      req.reject({
-        status: 403,
-        code: "TRAVELER_INACTIVE",
-        message: "An inactive traveler cannot create bookings.",
-      });
+      req.reject(403, "TRAVELER_INACTIVE");
     }
 
     const roomContext = await findActiveRoomContext(
@@ -62,12 +54,7 @@ export function registerBookingCreation(service) {
     );
 
     if (!roomContext) {
-      req.reject({
-        status: 400,
-        code: "INVALID_ROOM",
-        message: "Room must belong to an active hotel on an active planet.",
-        target: "room_ID",
-      });
+      req.reject(400, "INVALID_ROOM", "room_ID");
     }
 
     const roomIsUnavailable = await hasBlockingBooking(
@@ -79,12 +66,7 @@ export function registerBookingCreation(service) {
     );
 
     if (roomIsUnavailable) {
-      req.reject({
-        status: 409,
-        code: "ROOM_NOT_AVAILABLE",
-        message: "Room is not available for the selected dates.",
-        target: "room_ID",
-      });
+      req.reject(409, "ROOM_NOT_AVAILABLE", "room_ID");
     }
 
     const { room, hotel } = roomContext;
@@ -167,8 +149,7 @@ function validateStayPeriod(
     return {
       error: {
         status: 400,
-        code: "INVALID_CHECK_IN_DATE",
-        message: "Check-in date must be a valid ISO date.",
+        message: "INVALID_CHECK_IN_DATE",
         target: "checkInDate",
       },
     };
@@ -180,8 +161,7 @@ function validateStayPeriod(
     return {
       error: {
         status: 400,
-        code: "INVALID_CHECK_OUT_DATE",
-        message: "Check-out date must be a valid ISO date.",
+        message: "INVALID_CHECK_OUT_DATE",
         target: "checkOutDate",
       },
     };
@@ -193,8 +173,7 @@ function validateStayPeriod(
     return {
       error: {
         status: 400,
-        code: "CHECK_IN_DATE_IN_PAST",
-        message: "Check-in date cannot be in the past.",
+        message: "CHECK_IN_DATE_IN_PAST",
         target: "checkInDate",
       },
     };
@@ -209,8 +188,7 @@ function validateStayPeriod(
     return {
       error: {
         status: 400,
-        code: "CHECK_OUT_AFTER_CHECK_IN",
-        message: "Check-out date must be after check-in date.",
+        message: "CHECK_OUT_AFTER_CHECK_IN",
         target: "checkOutDate",
       },
     };
@@ -220,9 +198,9 @@ function validateStayPeriod(
     return {
       error: {
         status: 400,
-        code: "MAXIMUM_STAY_EXCEEDED",
-        message: `A booking cannot exceed ${MAXIMUM_STAY_NIGHTS} nights.`,
+        message: "MAXIMUM_STAY_EXCEEDED",
         target: "checkOutDate",
+        args: [MAXIMUM_STAY_NIGHTS],
       },
     };
   }

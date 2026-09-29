@@ -16,11 +16,7 @@ export function registerManagerRoomCreation(service) {
       .where({ userId: req.user.id });
 
     if (!assignment) {
-      req.reject({
-        status: 403,
-        code: "HOTEL_NOT_ASSIGNED",
-        message: "You are not assigned to a hotel.",
-      });
+      req.reject(403, "HOTEL_NOT_ASSIGNED");
     }
 
     req.data.hotel_ID = assignment.hotel_ID;

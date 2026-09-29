@@ -21,12 +21,7 @@ export function registerReviewRules(service) {
     );
 
     if (!stayIsCompleted) {
-      req.reject({
-        status: 409,
-        code: "COMPLETED_STAY_REQUIRED",
-        message: "Only guests with a completed stay can review this hotel.",
-        target: "hotel_ID",
-      });
+      req.reject(409, "COMPLETED_STAY_REQUIRED", "hotel_ID");
     }
 
     const reviewExists = await SELECT.one
@@ -35,13 +30,7 @@ export function registerReviewRules(service) {
       .where({ traveler_ID: traveler.ID, hotel_ID: hotelId });
 
     if (reviewExists) {
-      req.reject({
-        status: 409,
-        code: "REVIEW_ALREADY_EXISTS",
-        message:
-          "You have already reviewed this hotel. Edit your review instead.",
-        target: "hotel_ID",
-      });
+      req.reject(409, "REVIEW_ALREADY_EXISTS", "hotel_ID");
     }
 
     req.data.traveler_ID = traveler.ID;
@@ -61,19 +50,11 @@ async function findActiveTraveler(req, Travelers) {
     .where({ userId: req.user.id });
 
   if (!traveler) {
-    req.reject({
-      status: 409,
-      code: "TRAVELER_PROFILE_REQUIRED",
-      message: "Create a traveler profile before reviewing a hotel.",
-    });
+    req.reject(409, "TRAVELER_PROFILE_REQUIRED");
   }
 
   if (!traveler.isActive) {
-    req.reject({
-      status: 403,
-      code: "TRAVELER_INACTIVE",
-      message: "An inactive traveler cannot write reviews.",
-    });
+    req.reject(403, "TRAVELER_INACTIVE");
   }
 
   return traveler;

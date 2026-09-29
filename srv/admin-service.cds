@@ -142,4 +142,5 @@ service AdminService @(path: 'admin') {
   }
 
   action syncPlanetsFromSwapi() returns PlanetSyncResult;
+  action expireUnpaidBookings() returns Integer;
 }

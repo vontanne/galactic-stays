@@ -1,27 +1,16 @@
 using {galactic.stays as db} from '../db/schema';
 
-@requires: [
-  'Traveler',
-  'Admin'
-]
+@requires: 'Traveler'
 service BookingService @(path: 'booking') {
   @restrict: [
-    {
-      grant: 'CREATE',
-      to   : 'Traveler'
-    },
+    {grant: 'CREATE'},
     {
       grant: [
         'READ',
         'pay',
         'cancel'
       ],
-      to   : 'Traveler',
       where: (traveler.userId = $user)
-    },
-    {
-      grant: 'READ',
-      to   : 'Admin'
     }
   ]
   entity Bookings  as
@@ -98,17 +87,10 @@ service BookingService @(path: 'booking') {
       action cancel() returns Bookings;
     };
 
-  @restrict: [
-    {
-      grant: 'READ',
-      to   : 'Traveler',
-      where: (userId = $user)
-    },
-    {
-      grant: 'READ',
-      to   : 'Admin'
-    }
-  ]
+  @restrict: [{
+    grant: 'READ',
+    where: (userId = $user)
+  }]
   entity Travelers as
     projection on db.Travelers {
       ID,
@@ -159,17 +141,13 @@ service BookingService @(path: 'booking') {
       and hotel.planet.isActive = true;
 
   @restrict: [
-    {
-      grant: 'CREATE',
-      to   : 'Traveler'
-    },
+    {grant: 'CREATE'},
     {
       grant: [
         'READ',
         'UPDATE',
         'DELETE'
       ],
-      to   : 'Traveler',
       where: (traveler.userId = $user)
     }
   ]
@@ -191,7 +169,4 @@ service BookingService @(path: 'booking') {
       createdAt,
       modifiedAt
     };
-
-  @requires: 'Admin'
-  action expireUnpaidBookings() returns Integer;
 }

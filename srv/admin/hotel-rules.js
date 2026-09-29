@@ -30,12 +30,7 @@ export function registerHotelRules(service) {
     });
 
     if (!planetIsActive) {
-      req.reject({
-        status: 400,
-        code: "INVALID_PLANET",
-        message: "Hotel must be located on an active planet.",
-        target: "planet_ID",
-      });
+      req.reject(400, "INVALID_PLANET", "planet_ID");
     }
   });
 
@@ -62,12 +57,7 @@ export function registerHotelRules(service) {
     );
 
     if (nameIsTaken) {
-      req.reject({
-        status: 409,
-        code: "HOTEL_NAME_EXISTS",
-        message: "A hotel with this name already exists on this planet.",
-        target: "name",
-      });
+      req.reject(409, "HOTEL_NAME_EXISTS", "name");
     }
   });
 
@@ -81,12 +71,7 @@ export function registerHotelRules(service) {
     const roomNumbers = await resolveRoomNumbers(RoomRecords, req.data.rooms);
 
     if (new Set(roomNumbers).size !== roomNumbers.length) {
-      req.reject({
-        status: 409,
-        code: "ROOM_NUMBER_EXISTS",
-        message: "Room numbers must be unique within a hotel.",
-        target: "rooms",
-      });
+      req.reject(409, "ROOM_NUMBER_EXISTS", "rooms");
     }
   });
 
@@ -98,13 +83,7 @@ export function registerHotelRules(service) {
     const removedRoomIds = hotelRoomIds.filter((id) => !keptRoomIds.has(id));
 
     if (await roomsHaveBookings(BookingRecords, removedRoomIds)) {
-      req.reject({
-        status: 409,
-        code: "ROOM_HAS_BOOKINGS",
-        message:
-          "A room with bookings cannot be deleted. Deactivate it instead.",
-        target: "rooms",
-      });
+      req.reject(409, "ROOM_HAS_BOOKINGS", "rooms");
     }
   });
 
@@ -124,13 +103,7 @@ export function registerHotelRules(service) {
       );
 
       if (capacityIsTooLow) {
-        req.reject({
-          status: 409,
-          code: "ROOM_CAPACITY_TOO_LOW",
-          message:
-            "Room capacity cannot be lower than the guest count of an upcoming booking.",
-          target: "rooms",
-        });
+        req.reject(409, "ROOM_CAPACITY_TOO_LOW", "rooms");
       }
     }
   });
@@ -140,12 +113,7 @@ export function registerHotelRules(service) {
     const hotelRoomIds = await findHotelRoomIds(RoomRecords, hotelId);
 
     if (await roomsHaveBookings(BookingRecords, hotelRoomIds)) {
-      req.reject({
-        status: 409,
-        code: "HOTEL_HAS_BOOKINGS",
-        message:
-          "A hotel with bookings cannot be deleted. Deactivate it instead.",
-      });
+      req.reject(409, "HOTEL_HAS_BOOKINGS");
     }
 
     await DELETE.from(AssignmentRecords).where({ hotel_ID: hotelId });

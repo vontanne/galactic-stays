@@ -14,27 +14,15 @@ export function registerBookingCompletion(service) {
     const booking = await findBookingForUpdate(BookingRecords, bookingId);
 
     if (!booking) {
-      req.reject({
-        status: 404,
-        code: "BOOKING_NOT_FOUND",
-        message: "Booking was not found.",
-      });
+      req.reject(404, "BOOKING_NOT_FOUND");
     }
 
     if (booking.status === "Completed") {
-      req.reject({
-        status: 409,
-        code: "BOOKING_ALREADY_COMPLETED",
-        message: "Booking has already been completed.",
-      });
+      req.reject(409, "BOOKING_ALREADY_COMPLETED");
     }
 
     if (booking.status !== "Confirmed" || booking.paymentStatus !== "Paid") {
-      req.reject({
-        status: 409,
-        code: "BOOKING_NOT_COMPLETABLE",
-        message: "Only confirmed and paid bookings can be completed.",
-      });
+      req.reject(409, "BOOKING_NOT_COMPLETABLE");
     }
 
     const checkOutDate = parseDateOnly(booking.checkOutDate);
@@ -44,12 +32,7 @@ export function registerBookingCompletion(service) {
     }
 
     if (toUtcCalendarDate(req.timestamp) < checkOutDate) {
-      req.reject({
-        status: 409,
-        code: "STAY_NOT_FINISHED",
-        message:
-          "A booking can only be completed on or after its check-out date.",
-      });
+      req.reject(409, "STAY_NOT_FINISHED");
     }
 
     await UPDATE(BookingRecords)

@@ -41,11 +41,7 @@ async function cancelBooking(
   const booking = await findBookingForUpdate(BookingRecords, bookingId);
 
   if (!booking) {
-    req.reject({
-      status: 404,
-      code: "BOOKING_NOT_FOUND",
-      message: "Booking was not found.",
-    });
+    req.reject(404, "BOOKING_NOT_FOUND");
   }
 
   const cancellation = determineCancellation(booking, req.timestamp);
@@ -103,8 +99,7 @@ function determineCancellation(
     return {
       error: {
         status: 409,
-        code: "BOOKING_ALREADY_CANCELLED",
-        message: "Booking has already been cancelled.",
+        message: "BOOKING_ALREADY_CANCELLED",
       },
     };
   }
@@ -113,8 +108,7 @@ function determineCancellation(
     return {
       error: {
         status: 409,
-        code: "PAYMENT_WINDOW_EXPIRED",
-        message: "The payment window has expired.",
+        message: "PAYMENT_WINDOW_EXPIRED",
       },
     };
   }
@@ -130,8 +124,7 @@ function determineCancellation(
   return {
     error: {
       status: 409,
-      code: "BOOKING_NOT_CANCELLABLE",
-      message: "Booking is not in a cancellable state.",
+      message: "BOOKING_NOT_CANCELLABLE",
     },
   };
 }
@@ -141,8 +134,7 @@ function determineUnpaidCancellation(booking, referenceDate) {
     return {
       error: {
         status: 409,
-        code: "BOOKING_NOT_CANCELLABLE",
-        message: "Booking is not in a cancellable state.",
+        message: "BOOKING_NOT_CANCELLABLE",
       },
     };
   }
@@ -151,8 +143,7 @@ function determineUnpaidCancellation(booking, referenceDate) {
     return {
       error: {
         status: 409,
-        code: "PAYMENT_WINDOW_EXPIRED",
-        message: "The payment window has expired.",
+        message: "PAYMENT_WINDOW_EXPIRED",
       },
     };
   }
@@ -170,8 +161,7 @@ function determineTravelerPaidCancellation(booking, referenceDate) {
     return {
       error: {
         status: 409,
-        code: "CANCELLATION_PERIOD_ENDED",
-        message: "A booking cannot be cancelled on or after its check-in date.",
+        message: "CANCELLATION_PERIOD_ENDED",
       },
     };
   }
@@ -204,9 +194,7 @@ function determineHotelPaidCancellation(booking, referenceDate) {
     return {
       error: {
         status: 409,
-        code: "CANCELLATION_PERIOD_ENDED",
-        message:
-          "A booking cannot be cancelled on or after its check-out date.",
+        message: "CANCELLATION_PERIOD_ENDED",
       },
     };
   }

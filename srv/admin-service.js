@@ -5,6 +5,7 @@ import { registerHotelRules } from "./admin/hotel-rules.js";
 import { registerPlanetRules } from "./admin/planet-rules.js";
 import { registerPlanetSync } from "./admin/planet-sync.js";
 import { registerRoomRules } from "./admin/room-rules.js";
+import { registerUnpaidBookingExpiration } from "./booking/expire-unpaid-bookings.js";
 
 export class AdminService extends cds.ApplicationService {
   init() {
@@ -13,6 +14,7 @@ export class AdminService extends cds.ApplicationService {
     registerRoomRules(this);
     registerAssignmentRules(this);
     registerPlanetSync(this);
+    registerUnpaidBookingExpiration(this);
 
     return super.init();
   }

@@ -19,21 +19,11 @@ export class TravelerService extends cds.ApplicationService {
       const age = calculateAge(dateOfBirth, req.timestamp);
 
       if (age === undefined) {
-        req.reject({
-          status: 400,
-          code: "INVALID_DATE_OF_BIRTH",
-          message: "Date of birth must be a valid ISO date.",
-          target: "dateOfBirth",
-        });
+        req.reject(400, "INVALID_DATE_OF_BIRTH", "dateOfBirth");
       }
 
       if (age < MINIMUM_AGE) {
-        req.reject({
-          status: 400,
-          code: "TRAVELER_MINIMUM_AGE",
-          message: `Traveler must be at least ${MINIMUM_AGE} years old.`,
-          target: "dateOfBirth",
-        });
+        req.reject(400, "TRAVELER_MINIMUM_AGE", "dateOfBirth", [MINIMUM_AGE]);
       }
 
       const profileExists = await travelerProfileExists(
@@ -42,23 +32,14 @@ export class TravelerService extends cds.ApplicationService {
       );
 
       if (profileExists) {
-        req.reject({
-          status: 409,
-          code: "TRAVELER_PROFILE_EXISTS",
-          message: "A traveler profile already exists for this user.",
-        });
+        req.reject(409, "TRAVELER_PROFILE_EXISTS");
       }
 
       if (birthPlanetId != null) {
         const planetIsActive = await activePlanetExists(Planets, birthPlanetId);
 
         if (!planetIsActive) {
-          req.reject({
-            status: 400,
-            code: "INVALID_BIRTH_PLANET",
-            message: "Birth planet must reference an active planet.",
-            target: "birthPlanet_ID",
-          });
+          req.reject(400, "INVALID_BIRTH_PLANET", "birthPlanet_ID");
         }
       }
 
@@ -72,11 +53,7 @@ export class TravelerService extends cds.ApplicationService {
       );
 
       if (!travelerIsActive) {
-        req.reject({
-          status: 403,
-          code: "TRAVELER_INACTIVE",
-          message: "An inactive traveler profile cannot be updated.",
-        });
+        req.reject(403, "TRAVELER_INACTIVE");
       }
 
       if (!Object.hasOwn(req.data, "birthPlanet_ID")) return;
@@ -88,12 +65,7 @@ export class TravelerService extends cds.ApplicationService {
       const planetIsActive = await activePlanetExists(Planets, birthPlanetId);
 
       if (!planetIsActive) {
-        req.reject({
-          status: 400,
-          code: "INVALID_BIRTH_PLANET",
-          message: "Birth planet must reference an active planet.",
-          target: "birthPlanet_ID",
-        });
+        req.reject(400, "INVALID_BIRTH_PLANET", "birthPlanet_ID");
       }
     });
 

@@ -14,46 +14,26 @@ export function registerBookingPayment(service) {
     const booking = await findBookingForUpdate(BookingRecords, bookingId);
 
     if (!booking) {
-      req.reject({
-        status: 404,
-        code: "BOOKING_NOT_FOUND",
-        message: "Booking was not found.",
-      });
+      req.reject(404, "BOOKING_NOT_FOUND");
     }
 
     if (booking.paymentStatus === "Paid") {
-      req.reject({
-        status: 409,
-        code: "BOOKING_ALREADY_PAID",
-        message: "Booking has already been paid.",
-      });
+      req.reject(409, "BOOKING_ALREADY_PAID");
     }
 
     if (booking.status === "Expired") {
-      req.reject({
-        status: 409,
-        code: "PAYMENT_WINDOW_EXPIRED",
-        message: "The payment window has expired.",
-      });
+      req.reject(409, "PAYMENT_WINDOW_EXPIRED");
     }
 
     if (
       booking.status !== "AwaitingPayment" ||
       booking.paymentStatus !== "Unpaid"
     ) {
-      req.reject({
-        status: 409,
-        code: "BOOKING_NOT_PAYABLE",
-        message: "Booking is not in a payable state.",
-      });
+      req.reject(409, "BOOKING_NOT_PAYABLE");
     }
 
     if (isDeadlineReached(booking.paymentExpiresAt, req.timestamp)) {
-      req.reject({
-        status: 409,
-        code: "PAYMENT_WINDOW_EXPIRED",
-        message: "The payment window has expired.",
-      });
+      req.reject(409, "PAYMENT_WINDOW_EXPIRED");
     }
 
     await UPDATE(BookingRecords)

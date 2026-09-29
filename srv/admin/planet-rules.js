@@ -23,12 +23,7 @@ export function registerPlanetRules(service) {
     );
 
     if (nameIsTaken) {
-      req.reject({
-        status: 409,
-        code: "PLANET_NAME_EXISTS",
-        message: "A planet with this name already exists.",
-        target: "name",
-      });
+      req.reject(409, "PLANET_NAME_EXISTS", "name");
     }
   });
 
@@ -40,12 +35,7 @@ export function registerPlanetRules(service) {
       (await recordExists(TravelerRecords, { birthPlanet_ID: planetId }));
 
     if (planetIsUsed) {
-      req.reject({
-        status: 409,
-        code: "PLANET_IN_USE",
-        message:
-          "A planet referenced by hotels or travelers cannot be deleted. Deactivate it instead.",
-      });
+      req.reject(409, "PLANET_IN_USE");
     }
   });
 }

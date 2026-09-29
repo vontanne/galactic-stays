@@ -33,12 +33,7 @@ export function registerAssignmentRules(service) {
       );
 
       if (hotelIsManaged) {
-        req.reject({
-          status: 409,
-          code: "HOTEL_ALREADY_MANAGED",
-          message: "This hotel already has a manager.",
-          target: "hotel_ID",
-        });
+        req.reject(409, "HOTEL_ALREADY_MANAGED", "hotel_ID");
       }
 
       const managerIsAssigned = await otherRecordExists(
@@ -48,12 +43,7 @@ export function registerAssignmentRules(service) {
       );
 
       if (managerIsAssigned) {
-        req.reject({
-          status: 409,
-          code: "MANAGER_ALREADY_ASSIGNED",
-          message: "This manager is already assigned to a hotel.",
-          target: "userId",
-        });
+        req.reject(409, "MANAGER_ALREADY_ASSIGNED", "userId");
       }
 
       const userIsTraveler = await recordExists(TravelerRecords, {
@@ -61,12 +51,7 @@ export function registerAssignmentRules(service) {
       });
 
       if (userIsTraveler) {
-        req.reject({
-          status: 409,
-          code: "MANAGER_IS_TRAVELER",
-          message: "A traveler cannot be assigned as a hotel manager.",
-          target: "userId",
-        });
+        req.reject(409, "MANAGER_IS_TRAVELER", "userId");
       }
     },
   );

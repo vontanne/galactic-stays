@@ -30,24 +30,13 @@ export function registerRoomRules(service) {
     );
 
     if (capacityIsTooLow) {
-      req.reject({
-        status: 409,
-        code: "ROOM_CAPACITY_TOO_LOW",
-        message:
-          "Room capacity cannot be lower than the guest count of an upcoming booking.",
-        target: "capacity",
-      });
+      req.reject(409, "ROOM_CAPACITY_TOO_LOW", "capacity");
     }
   });
 
   service.before("DELETE", Rooms, async (req) => {
     if (await roomsHaveBookings(BookingRecords, [req.data.ID])) {
-      req.reject({
-        status: 409,
-        code: "ROOM_HAS_BOOKINGS",
-        message:
-          "A room with bookings cannot be deleted. Deactivate it instead.",
-      });
+      req.reject(409, "ROOM_HAS_BOOKINGS");
     }
   });
 }
@@ -60,12 +49,7 @@ async function validateRoomHotel(req) {
     hotelId != null && (await recordExists(HotelRecords, { ID: hotelId }));
 
   if (!hotelExists) {
-    req.reject({
-      status: 400,
-      code: "INVALID_HOTEL",
-      message: "Room must belong to an existing hotel.",
-      target: "hotel_ID",
-    });
+    req.reject(400, "INVALID_HOTEL", "hotel_ID");
   }
 }
 
@@ -84,11 +68,6 @@ export async function validateRoomNumber(req) {
   );
 
   if (numberIsTaken) {
-    req.reject({
-      status: 409,
-      code: "ROOM_NUMBER_EXISTS",
-      message: "Room numbers must be unique within a hotel.",
-      target: "number",
-    });
+    req.reject(409, "ROOM_NUMBER_EXISTS", "number");
   }
 }

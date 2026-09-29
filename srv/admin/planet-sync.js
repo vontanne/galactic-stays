@@ -19,12 +19,7 @@ export function registerPlanetSync(service) {
 
       LOG.warn(`Planet sync aborted: ${error.message}`);
 
-      return req.reject({
-        status: 502,
-        code: error.code,
-        message:
-          "The Star Wars API could not provide the planet list. No planets were changed. Try again later.",
-      });
+      return req.reject(502, error.code);
     }
 
     return synchronizePlanets(PlanetRecords, swapiPlanets);
