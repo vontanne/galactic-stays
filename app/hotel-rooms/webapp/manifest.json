@@ -1,0 +1,117 @@
+{
+  "_version": "1.65.0",
+  "sap.app": {
+    "id": "galactic.stays.hotelrooms",
+    "type": "application",
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "applicationVersion": {
+      "version": "1.0.0"
+    },
+    "i18n": "i18n/i18n.properties",
+    "dataSources": {
+      "mainService": {
+        "uri": "/odata/v4/hotel-management/",
+        "type": "OData",
+        "settings": {
+          "odataVersion": "4.0"
+        }
+      }
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "dependencies": {
+      "minUI5Version": "1.145.0",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.core": {},
+        "sap.fe.templates": {}
+      }
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "galactic.stays.hotelrooms.i18n.i18n"
+        }
+      },
+      "": {
+        "dataSource": "mainService",
+        "preload": true,
+        "settings": {
+          "operationMode": "Server",
+          "autoExpandSelect": true,
+          "earlyRequests": true
+        }
+      }
+    },
+    "routing": {
+      "routes": [
+        {
+          "pattern": ":?query:",
+          "name": "RoomsList",
+          "target": "RoomsList"
+        },
+        {
+          "pattern": "Rooms({key}):?query:",
+          "name": "RoomsObjectPage",
+          "target": "RoomsObjectPage"
+        }
+      ],
+      "targets": {
+        "RoomsList": {
+          "type": "Component",
+          "id": "RoomsList",
+          "name": "sap.fe.templates.ListReport",
+          "options": {
+            "settings": {
+              "contextPath": "/Rooms",
+              "variantManagement": "None",
+              "initialLoad": "Enabled",
+              "navigation": {
+                "Rooms": {
+                  "detail": {
+                    "route": "RoomsObjectPage"
+                  }
+                }
+              },
+              "controlConfiguration": {
+                "@com.sap.vocabularies.UI.v1.LineItem": {
+                  "tableSettings": {
+                    "creationMode": {
+                      "name": "CreationDialog",
+                      "creationFields": "number,type,capacity,pricePerNight"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "RoomsObjectPage": {
+          "type": "Component",
+          "id": "RoomsObjectPage",
+          "name": "sap.fe.templates.ObjectPage",
+          "options": {
+            "settings": {
+              "contextPath": "/Rooms",
+              "editableHeaderContent": false
+            }
+          }
+        }
+      }
+    }
+  },
+  "sap.fiori": {
+    "registrationIds": [],
+    "archeType": "transactional"
+  }
+}

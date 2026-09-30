@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Galactic Stays</title>
+    <script>
+      const app = (id, title, persona, folder) => ({
+        title,
+        description: persona,
+        additionalInformation: `SAPUI5.Component=galactic.stays.${id}`,
+        applicationType: "URL",
+        url: `./${folder}/webapp`,
+        navigationMode: "embedded",
+      });
+
+      window["sap-ushell-config"] = {
+        defaultRenderer: "fiori2",
+        renderers: {
+          fiori2: {
+            componentData: {
+              config: {
+                enableSearch: false,
+                enablePersonalization: false,
+                enableNotifications: false,
+                enableNotificationsUI: false,
+              },
+            },
+          },
+        },
+        applications: {
+          "catalog-display": app(
+            "catalog",
+            "Hotel Catalog",
+            "Everyone",
+            "catalog",
+          ),
+          "profile-manage": app(
+            "travelerprofile",
+            "My Profile",
+            "Traveler",
+            "traveler-profile",
+          ),
+          "bookings-manage": app(
+            "travelerbookings",
+            "My Bookings",
+            "Traveler",
+            "traveler-bookings",
+          ),
+          "reviews-manage": app(
+            "travelerreviews",
+            "My Reviews",
+            "Traveler",
+            "traveler-reviews",
+          ),
+          "hotelbookings-manage": app(
+            "hotelbookings",
+            "Hotel Bookings",
+            "Hotel manager",
+            "hotel-bookings",
+          ),
+          "hotelrooms-manage": app(
+            "hotelrooms",
+            "Hotel Rooms",
+            "Hotel manager",
+            "hotel-rooms",
+          ),
+          "hotels-manage": app(
+            "adminhotels",
+            "Manage Hotels",
+            "Admin",
+            "admin-hotels",
+          ),
+          "planets-manage": app(
+            "adminplanets",
+            "Manage Planets",
+            "Admin",
+            "admin-planets",
+          ),
+        },
+      };
+    </script>
+    <script
+      id="sap-ushell-bootstrap"
+      src="https://ui5.sap.com/1.145.0/test-resources/sap/ushell/bootstrap/sandbox.js"
+    ></script>
+    <script
+      id="sap-ui-bootstrap"
+      src="https://ui5.sap.com/1.145.0/resources/sap-ui-core.js"
+      data-sap-ui-theme="sap_horizon"
+      data-sap-ui-libs="sap.m, sap.ushell, sap.fe.templates"
+      data-sap-ui-compat-version="edge"
+      data-sap-ui-async="true"
+      data-sap-ui-frame-options="trusted"
+      data-sap-ui-flexibility-services='[{ "connector": "LocalStorageConnector" }]'
+    ></script>
+    <script>
+      sap.ui.require(["sap/ui/core/Core"], (Core) =>
+        Core.ready(() =>
+          sap.ushell.Container.createRenderer(true).then((renderer) =>
+            renderer.placeAt("content"),
+          ),
+        ),
+      );
+    </script>
+  </head>
+  <body class="sapUiBody sapUiSizeCompact" id="content"></body>
+</html>

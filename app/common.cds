@@ -4,6 +4,7 @@ using {HotelManagementService} from '../srv/hotel-management-service';
 using {AdminService} from '../srv/admin-service';
 
 annotate db.Planets with @cds.odata.valuelist {
+  ID       @title: '{i18n>Planet}'  @Common.Text: name  @Common.TextArrangement: #TextOnly;
   name     @title: '{i18n>Planet}';
   region   @title: '{i18n>Region}';
   climate  @title: '{i18n>Climate}';
@@ -22,6 +23,7 @@ annotate db.Travelers with {
 };
 
 annotate db.Hotels with @cds.odata.valuelist {
+  ID           @title: '{i18n>Hotel}'  @Common.Text: name  @Common.TextArrangement: #TextOnly;
   name         @title: '{i18n>Hotel}';
   planet       @title: '{i18n>Planet}'  @Common.Text: planet.name  @Common.TextArrangement: #TextOnly;
   address      @title: '{i18n>Address}';
@@ -43,6 +45,7 @@ annotate db.HotelManagementAssignments with {
 };
 
 annotate db.Rooms with @cds.odata.valuelist {
+  ID             @title: '{i18n>Room}'  @Common.Text: number  @Common.TextArrangement: #TextOnly;
   hotel          @title: '{i18n>Hotel}'          @Common.Text         : hotel.name  @Common.TextArrangement: #TextOnly;
   number         @title: '{i18n>RoomNumber}';
   type           @title: '{i18n>RoomType}';

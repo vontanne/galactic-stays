@@ -1,0 +1,107 @@
+{
+  "_version": "1.65.0",
+  "sap.app": {
+    "id": "galactic.stays.adminplanets",
+    "type": "application",
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "applicationVersion": {
+      "version": "1.0.0"
+    },
+    "i18n": "i18n/i18n.properties",
+    "dataSources": {
+      "mainService": {
+        "uri": "/odata/v4/admin/",
+        "type": "OData",
+        "settings": {
+          "odataVersion": "4.0"
+        }
+      }
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "dependencies": {
+      "minUI5Version": "1.145.0",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.core": {},
+        "sap.fe.templates": {}
+      }
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "galactic.stays.adminplanets.i18n.i18n"
+        }
+      },
+      "": {
+        "dataSource": "mainService",
+        "preload": true,
+        "settings": {
+          "operationMode": "Server",
+          "autoExpandSelect": true,
+          "earlyRequests": true
+        }
+      }
+    },
+    "routing": {
+      "routes": [
+        {
+          "pattern": ":?query:",
+          "name": "PlanetsList",
+          "target": "PlanetsList"
+        },
+        {
+          "pattern": "Planets({key}):?query:",
+          "name": "PlanetsObjectPage",
+          "target": "PlanetsObjectPage"
+        }
+      ],
+      "targets": {
+        "PlanetsList": {
+          "type": "Component",
+          "id": "PlanetsList",
+          "name": "sap.fe.templates.ListReport",
+          "options": {
+            "settings": {
+              "contextPath": "/Planets",
+              "variantManagement": "None",
+              "initialLoad": "Enabled",
+              "navigation": {
+                "Planets": {
+                  "detail": {
+                    "route": "PlanetsObjectPage"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "PlanetsObjectPage": {
+          "type": "Component",
+          "id": "PlanetsObjectPage",
+          "name": "sap.fe.templates.ObjectPage",
+          "options": {
+            "settings": {
+              "contextPath": "/Planets",
+              "editableHeaderContent": false
+            }
+          }
+        }
+      }
+    }
+  },
+  "sap.fiori": {
+    "registrationIds": [],
+    "archeType": "transactional"
+  }
+}

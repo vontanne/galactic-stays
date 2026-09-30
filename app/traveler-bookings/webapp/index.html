@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Bookings</title>
+    <style>
+      html,
+      body,
+      body > div,
+      #container,
+      #container-uiarea {
+        height: 100%;
+      }
+    </style>
+    <script
+      id="sap-ui-bootstrap"
+      src="https://ui5.sap.com/1.145.0/resources/sap-ui-core.js"
+      data-sap-ui-theme="sap_horizon"
+      data-sap-ui-resource-roots='{ "galactic.stays.travelerbookings": "./" }'
+      data-sap-ui-on-init="module:sap/ui/core/ComponentSupport"
+      data-sap-ui-compat-version="edge"
+      data-sap-ui-async="true"
+      data-sap-ui-frame-options="trusted"
+      data-sap-ui-flexibility-services='[{ "connector": "LocalStorageConnector" }]'
+    ></script>
+  </head>
+  <body class="sapUiBody sapUiSizeCompact" id="content">
+    <div
+      data-sap-ui-component
+      data-name="galactic.stays.travelerbookings"
+      data-id="container"
+      data-settings='{ "id": "galactic.stays.travelerbookings" }'
+      data-handle-validation="true"
+    ></div>
+  </body>
+</html>

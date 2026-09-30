@@ -1,0 +1,12 @@
+{
+  "services": {
+    "LaunchPage": {
+      "adapter": {
+        "config": {
+          "catalogs": [],
+          "groups": []
+        }
+      }
+    }
+  }
+}

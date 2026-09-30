@@ -1,13 +1,16 @@
-using CatalogService from '../../srv/catalog-service';
+using AdminService from '../../srv/admin-service';
 
-annotate CatalogService.Hotels with @(
+annotate AdminService.Hotels with @(
   UI.HeaderInfo         : {
     TypeName      : '{i18n>Hotel}',
     TypeNamePlural: '{i18n>Hotels}',
     Title         : {Value: name},
     Description   : {Value: planet.name}
   },
-  UI.SelectionFields    : [planet_ID],
+  UI.SelectionFields    : [
+    planet_ID,
+    isActive
+  ],
   UI.LineItem           : [
     {Value: name},
     {Value: planet_ID},
@@ -18,8 +21,7 @@ annotate CatalogService.Hotels with @(
       @HTML5.CssDefaults: {width: '9rem'}
     },
     {Value: reviewCount},
-    {Value: checkInTime},
-    {Value: checkOutTime}
+    {Value: isActive}
   ],
   UI.DataPoint #rating  : {
     Title        : '{i18n>AverageRating}',
@@ -35,19 +37,22 @@ annotate CatalogService.Hotels with @(
       0
     ]}}
   }],
-  UI.FieldGroup #details: {Data: [
+  UI.FieldGroup #general: {Data: [
+    {Value: name},
+    {Value: planet_ID},
     {Value: address},
     {Value: phoneNumber},
     {Value: checkInTime},
     {Value: checkOutTime},
-    {Value: description}
+    {Value: description},
+    {Value: isActive}
   ]},
   UI.Facets             : [
     {
       $Type : 'UI.ReferenceFacet',
-      ID    : 'details',
-      Label : '{i18n>Details}',
-      Target: '@UI.FieldGroup#details'
+      ID    : 'general',
+      Label : '{i18n>General}',
+      Target: '@UI.FieldGroup#general'
     },
     {
       $Type : 'UI.ReferenceFacet',
@@ -64,14 +69,19 @@ annotate CatalogService.Hotels with @(
   ]
 );
 
-annotate CatalogService.Rooms with @(UI.LineItem: [
+annotate AdminService.Hotels with {
+  ID @Core.Computed;
+};
+
+annotate AdminService.Rooms with @(UI.LineItem: [
   {Value: number},
   {Value: type},
   {Value: capacity},
-  {Value: pricePerNight}
+  {Value: pricePerNight},
+  {Value: isActive}
 ]);
 
-annotate CatalogService.Reviews with @(
+annotate AdminService.Reviews with @(
   UI.DataPoint #rating: {
     Value        : rating,
     Visualization: #Rating,
@@ -85,7 +95,10 @@ annotate CatalogService.Reviews with @(
       @HTML5.CssDefaults: {width: '9rem'}
     },
     {Value: comment},
-    {Value: authorName},
+    {
+      Value: traveler.firstName,
+      Label: '{i18n>Author}'
+    },
     {Value: createdAt}
   ]
 );
