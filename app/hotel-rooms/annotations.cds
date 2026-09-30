@@ -35,3 +35,7 @@ annotate HotelManagementService.Rooms with @(
     Target: '@UI.FieldGroup#room'
   }]
 );
+
+annotate HotelManagementService.Rooms with {
+  ID @Core.Computed;
+};

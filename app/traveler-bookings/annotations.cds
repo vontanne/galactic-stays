@@ -24,8 +24,9 @@ annotate BookingService.Bookings with @(
     {Value: guestCount},
     {Value: totalAmount},
     {
-      Value      : status,
-      Criticality: statusCriticality
+      Value         : status,
+      Criticality   : statusCriticality,
+      @UI.Importance: #High
     },
     {
       $Type : 'UI.DataFieldForAction',
@@ -108,7 +109,7 @@ annotate BookingService.Bookings with @(
     }
   ]
 ) actions {
-  pay    @(
+  pay                                 @(
     Core.OperationAvailable: {$edmJson: {$And: [
       {$Path: 'in/IsActiveEntity'},
       {$Eq: [
@@ -118,7 +119,7 @@ annotate BookingService.Bookings with @(
     ]}},
     Common.SideEffects     : {TargetEntities: ['in']}
   );
-  cancel @(
+  cancel                              @(
     Core.OperationAvailable: {$edmJson: {$And: [
       {$Path: 'in/IsActiveEntity'},
       {$Or: [
@@ -164,3 +165,9 @@ annotate BookingService.Bookings with {
     ]
   };
 };
+
+annotate BookingService.Rooms with @UI.SelectionFields: [
+  hotel_ID,
+  type,
+  capacity
+];

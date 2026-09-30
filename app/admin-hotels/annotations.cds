@@ -30,12 +30,12 @@ annotate AdminService.Hotels with @(
     TargetValue  : 5
   },
   UI.HeaderFacets       : [{
-    $Type      : 'UI.ReferenceFacet',
-    Target     : '@UI.DataPoint#rating',
-    @UI.Hidden : {$edmJson: {$Eq: [
+    $Type     : 'UI.ReferenceFacet',
+    Target    : '@UI.DataPoint#rating',
+    @UI.Hidden: {$edmJson: {$Not: {$Gt: [
       {$Path: 'reviewCount'},
       0
-    ]}}
+    ]}}}
   }],
   UI.FieldGroup #general: {Data: [
     {Value: name},

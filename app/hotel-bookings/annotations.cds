@@ -25,8 +25,9 @@ annotate HotelManagementService.Bookings with @(
     {Value: checkOutDate},
     {Value: totalAmount},
     {
-      Value      : status,
-      Criticality: statusCriticality
+      Value         : status,
+      Criticality   : statusCriticality,
+      @UI.Importance: #High
     },
     {
       $Type : 'UI.DataFieldForAction',

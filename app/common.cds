@@ -23,11 +23,11 @@ annotate db.Travelers with {
 };
 
 annotate db.Hotels with @cds.odata.valuelist {
-  ID           @title: '{i18n>Hotel}'  @Common.Text: name  @Common.TextArrangement: #TextOnly;
+  ID           @title: '{i18n>Hotel}'        @Common.Text: name         @Common.TextArrangement: #TextOnly;
   name         @title: '{i18n>Hotel}';
-  planet       @title: '{i18n>Planet}'  @Common.Text: planet.name  @Common.TextArrangement: #TextOnly;
+  planet       @title: '{i18n>Planet}'       @Common.Text: planet.name  @Common.TextArrangement: #TextOnly;
   address      @title: '{i18n>Address}';
-  description  @title: '{i18n>Description}';
+  description  @title: '{i18n>Description}'  @UI.MultiLineText;
   phoneNumber  @title: '{i18n>PhoneNumber}';
   checkInTime  @title: '{i18n>CheckInTime}';
   checkOutTime @title: '{i18n>CheckOutTime}';
@@ -45,7 +45,7 @@ annotate db.HotelManagementAssignments with {
 };
 
 annotate db.Rooms with @cds.odata.valuelist {
-  ID             @title: '{i18n>Room}'  @Common.Text: number  @Common.TextArrangement: #TextOnly;
+  ID             @title: '{i18n>Room}'           @Common.Text         : number      @Common.TextArrangement: #TextOnly;
   hotel          @title: '{i18n>Hotel}'          @Common.Text         : hotel.name  @Common.TextArrangement: #TextOnly;
   number         @title: '{i18n>RoomNumber}';
   type           @title: '{i18n>RoomType}';
@@ -62,7 +62,7 @@ annotate db.Bookings with {
   checkOutDate      @title: '{i18n>CheckOutDate}';
   checkOutTime      @title: '{i18n>CheckOutTime}';
   guestCount        @title: '{i18n>Guests}';
-  specialRequests   @title: '{i18n>SpecialRequests}';
+  specialRequests   @title: '{i18n>SpecialRequests}'  @UI.MultiLineText;
   status            @title: '{i18n>Status}';
   statusCriticality @UI.Hidden;
   paymentStatus     @title: '{i18n>PaymentStatus}';
