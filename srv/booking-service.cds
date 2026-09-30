@@ -51,6 +51,7 @@ service BookingService @(path: 'booking') {
 
       @readonly
       status,
+      statusCriticality,
 
       @readonly
       paymentStatus,

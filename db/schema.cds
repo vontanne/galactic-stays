@@ -118,6 +118,14 @@ entity Bookings : cuid, managed {
 
   status           : BookingStatus not null default #AwaitingPayment;
 
+  statusCriticality: Integer = case status
+                                 when 'AwaitingPayment' then 2
+                                 when 'Confirmed'       then 3
+                                 when 'Completed'       then 5
+                                 when 'Expired'         then 1
+                                 else 0
+                               end;
+
   paymentStatus    : PaymentStatus not null default #Unpaid;
 
   paymentExpiresAt : Timestamp not null;

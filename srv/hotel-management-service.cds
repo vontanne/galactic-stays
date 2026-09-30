@@ -37,6 +37,7 @@ service HotelManagementService @(path: 'hotel-management') {
       guestCount,
       specialRequests,
       status,
+      statusCriticality,
       paymentStatus,
       paymentExpiresAt,
       nightlyRate,
