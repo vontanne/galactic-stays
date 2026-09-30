@@ -2,6 +2,7 @@ using {galactic.stays as db} from '../db/schema';
 
 @requires: 'Traveler'
 service TravelerService @(path: 'traveler') {
+  @odata.draft.enabled
   @restrict: [
     {grant: 'CREATE'},
     {

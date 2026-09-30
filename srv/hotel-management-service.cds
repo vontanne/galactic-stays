@@ -129,6 +129,7 @@ service HotelManagementService @(path: 'hotel-management') {
       modifiedAt
     };
 
+  @odata.draft.enabled
   @restrict: [
     {
       grant: [

@@ -2,6 +2,7 @@ using {galactic.stays as db} from '../db/schema';
 
 @requires: 'Admin'
 service AdminService @(path: 'admin') {
+  @odata.draft.enabled
   entity Planets                    as
     projection on db.Planets {
       ID,
@@ -15,6 +16,7 @@ service AdminService @(path: 'admin') {
       isActive
     };
 
+  @odata.draft.enabled
   entity Hotels                     as
     projection on db.Hotels {
       ID,

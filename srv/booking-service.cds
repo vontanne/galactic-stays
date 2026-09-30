@@ -2,6 +2,7 @@ using {galactic.stays as db} from '../db/schema';
 
 @requires: 'Traveler'
 service BookingService @(path: 'booking') {
+  @odata.draft.enabled
   @restrict: [
     {grant: 'CREATE'},
     {
@@ -141,6 +142,7 @@ service BookingService @(path: 'booking') {
       and hotel.isActive        = true
       and hotel.planet.isActive = true;
 
+  @odata.draft.enabled
   @restrict: [
     {grant: 'CREATE'},
     {
