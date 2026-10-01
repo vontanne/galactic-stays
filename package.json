@@ -21,7 +21,7 @@
     "lint": "eslint .",
     "format": "prettier . --write --ignore-unknown",
     "format:check": "prettier . --check --ignore-unknown",
-    "test": "node --test"
+    "test": "node --test \"test/*.test.js\""
   },
   "cds": {
     "requires": {
