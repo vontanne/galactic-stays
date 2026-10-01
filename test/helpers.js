@@ -1,3 +1,5 @@
+import cds from "@sap/cds";
+
 export const seed = {
   planets: {
     tatooine: "10f11185-ee89-4caf-8cb0-5c8c37a6cdfa",
@@ -38,4 +40,36 @@ export const seed = {
 
 export function auth(username) {
   return { auth: { username, password: username } };
+}
+
+export function isoDate(daysFromToday) {
+  const date = new Date();
+  date.setUTCDate(date.getUTCDate() + daysFromToday);
+
+  return date.toISOString().slice(0, 10);
+}
+
+export async function insertBooking(values) {
+  const { INSERT } = cds.ql;
+  const ID = cds.utils.uuid();
+
+  await INSERT.into("galactic.stays.Bookings").entries({
+    ID,
+    traveler_ID: seed.travelers.anakin,
+    room_ID: seed.rooms.galacticCity101,
+    checkInDate: isoDate(10),
+    checkInTime: "14:00:00",
+    checkOutDate: isoDate(12),
+    checkOutTime: "11:00:00",
+    guestCount: 2,
+    status: "Confirmed",
+    paymentStatus: "Paid",
+    paymentExpiresAt: new Date().toISOString(),
+    nightlyRate: "450.00",
+    totalAmount: "900.00",
+    currency_code: "GCR",
+    ...values,
+  });
+
+  return ID;
 }
