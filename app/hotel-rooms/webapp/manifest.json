@@ -76,6 +76,7 @@
               "contextPath": "/Rooms",
               "variantManagement": "None",
               "initialLoad": "Enabled",
+              "hideFilterBar": true,
               "navigation": {
                 "Rooms": {
                   "detail": {
@@ -89,7 +90,10 @@
                     "creationMode": {
                       "name": "CreationDialog",
                       "creationFields": "number,type,capacity,pricePerNight"
-                    }
+                    },
+                    "personalization": false,
+                    "enableExport": false,
+                    "disableCopyToClipboard": true
                   }
                 }
               }

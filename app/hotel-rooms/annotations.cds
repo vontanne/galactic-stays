@@ -8,10 +8,6 @@ annotate HotelManagementService.Rooms with @(
     Title         : {Value: number},
     Description   : {Value: hotel.name}
   },
-  UI.SelectionFields             : [
-    type,
-    isActive
-  ],
   UI.LineItem                    : [
     {Value: hotel_ID},
     {Value: number},

@@ -9,8 +9,14 @@ annotate TravelerService.Travelers with @(
     Description   : {Value: lastName}
   },
   UI.LineItem                    : [
-    {Value: firstName},
-    {Value: lastName},
+    {
+      Value             : firstName,
+      @HTML5.CssDefaults: {width: '12rem'}
+    },
+    {
+      Value             : lastName,
+      @HTML5.CssDefaults: {width: '12rem'}
+    },
     {Value: species},
     {Value: birthPlanet_ID}
   ],

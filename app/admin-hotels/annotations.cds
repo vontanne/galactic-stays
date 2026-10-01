@@ -7,10 +7,6 @@ annotate AdminService.Hotels with @(
     Title         : {Value: name},
     Description   : {Value: planet.name}
   },
-  UI.SelectionFields    : [
-    planet_ID,
-    isActive
-  ],
   UI.LineItem           : [
     {Value: name},
     {Value: planet_ID},
@@ -61,10 +57,11 @@ annotate AdminService.Hotels with @(
       Target: 'rooms/@UI.LineItem'
     },
     {
-      $Type : 'UI.ReferenceFacet',
-      ID    : 'reviews',
-      Label : '{i18n>Reviews}',
-      Target: 'reviews/@UI.LineItem'
+      $Type     : 'UI.ReferenceFacet',
+      ID        : 'reviews',
+      Label     : '{i18n>Reviews}',
+      Target    : 'reviews/@UI.LineItem',
+      @UI.Hidden: {$edmJson: {$Not: {$Path: 'IsActiveEntity'}}}
     }
   ]
 );

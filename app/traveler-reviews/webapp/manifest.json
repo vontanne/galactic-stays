@@ -76,6 +76,7 @@
               "contextPath": "/Reviews",
               "variantManagement": "None",
               "initialLoad": "Enabled",
+              "hideFilterBar": true,
               "navigation": {
                 "Reviews": {
                   "detail": {
@@ -89,7 +90,10 @@
                     "creationMode": {
                       "name": "CreationDialog",
                       "creationFields": "hotel_ID,rating,comment"
-                    }
+                    },
+                    "personalization": false,
+                    "enableExport": false,
+                    "disableCopyToClipboard": true
                   }
                 }
               }

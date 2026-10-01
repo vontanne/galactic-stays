@@ -1,14 +1,13 @@
 using AdminService from '../../srv/admin-service';
 
 annotate AdminService.Planets with @(
-  UI.HeaderInfo        : {
+  UI.HeaderInfo         : {
     TypeName      : '{i18n>Planet}',
     TypeNamePlural: '{i18n>Planets}',
     Title         : {Value: name},
     Description   : {Value: region}
   },
-  UI.SelectionFields   : [isActive],
-  UI.LineItem          : [
+  UI.LineItem           : [
     {Value: name},
     {Value: region},
     {Value: isActive},
@@ -18,14 +17,18 @@ annotate AdminService.Planets with @(
       Label : '{i18n>SyncFromSwapi}'
     }
   ],
-  UI.FieldGroup #planet: {Data: [
+  UI.PresentationVariant: {
+    SortOrder     : [{Property: name}],
+    Visualizations: ['@UI.LineItem']
+  },
+  UI.FieldGroup #planet : {Data: [
     {Value: name},
     {Value: region},
     {Value: climate},
     {Value: terrain},
     {Value: isActive}
   ]},
-  UI.Facets            : [{
+  UI.Facets             : [{
     $Type : 'UI.ReferenceFacet',
     ID    : 'planet',
     Label : '{i18n>Planet}',

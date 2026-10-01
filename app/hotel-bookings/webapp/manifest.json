@@ -76,10 +76,20 @@
               "contextPath": "/Bookings",
               "variantManagement": "None",
               "initialLoad": "Enabled",
+              "hideFilterBar": true,
               "navigation": {
                 "Bookings": {
                   "detail": {
                     "route": "BookingsObjectPage"
+                  }
+                }
+              },
+              "controlConfiguration": {
+                "@com.sap.vocabularies.UI.v1.LineItem": {
+                  "tableSettings": {
+                    "personalization": false,
+                    "enableExport": false,
+                    "disableCopyToClipboard": true
                   }
                 }
               }

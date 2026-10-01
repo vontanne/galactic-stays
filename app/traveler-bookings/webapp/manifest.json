@@ -76,6 +76,7 @@
               "contextPath": "/Bookings",
               "variantManagement": "None",
               "initialLoad": "Enabled",
+              "hideFilterBar": true,
               "navigation": {
                 "Bookings": {
                   "detail": {
@@ -89,7 +90,10 @@
                     "creationMode": {
                       "name": "CreationDialog",
                       "creationFields": "room_ID,checkInDate,checkOutDate,guestCount,specialRequests"
-                    }
+                    },
+                    "personalization": false,
+                    "enableExport": false,
+                    "disableCopyToClipboard": true
                   }
                 }
               }

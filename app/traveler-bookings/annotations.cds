@@ -9,16 +9,16 @@ annotate BookingService.Bookings with @(
     Title         : {Value: room.hotel.name},
     Description   : {Value: checkInDate}
   },
-  UI.SelectionFields             : [
-    status,
-    checkInDate
-  ],
   UI.LineItem                    : [
     {
-      Value: room.hotel.name,
-      Label: '{i18n>Hotel}'
+      Value             : room.hotel.name,
+      Label             : '{i18n>Hotel}',
+      @HTML5.CssDefaults: {width: '12rem'}
     },
-    {Value: room_ID},
+    {
+      Value             : room_ID,
+      @HTML5.CssDefaults: {width: '6rem'}
+    },
     {Value: checkInDate},
     {Value: checkOutDate},
     {Value: guestCount},

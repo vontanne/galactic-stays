@@ -7,7 +7,6 @@ annotate CatalogService.Hotels with @(
     Title         : {Value: name},
     Description   : {Value: planet.name}
   },
-  UI.SelectionFields    : [planet_ID],
   UI.LineItem           : [
     {Value: name},
     {Value: planet_ID},

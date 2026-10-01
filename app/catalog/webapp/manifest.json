@@ -76,10 +76,20 @@
               "contextPath": "/Hotels",
               "variantManagement": "None",
               "initialLoad": "Enabled",
+              "hideFilterBar": true,
               "navigation": {
                 "Hotels": {
                   "detail": {
                     "route": "HotelsObjectPage"
+                  }
+                }
+              },
+              "controlConfiguration": {
+                "@com.sap.vocabularies.UI.v1.LineItem": {
+                  "tableSettings": {
+                    "personalization": false,
+                    "enableExport": false,
+                    "disableCopyToClipboard": true
                   }
                 }
               }
@@ -92,7 +102,25 @@
           "name": "sap.fe.templates.ObjectPage",
           "options": {
             "settings": {
-              "contextPath": "/Hotels"
+              "contextPath": "/Hotels",
+              "controlConfiguration": {
+                "rooms/@com.sap.vocabularies.UI.v1.LineItem": {
+                  "tableSettings": {
+                    "personalization": false,
+                    "enableExport": false,
+                    "disableCopyToClipboard": true,
+                    "isSearchable": false
+                  }
+                },
+                "reviews/@com.sap.vocabularies.UI.v1.LineItem": {
+                  "tableSettings": {
+                    "personalization": false,
+                    "enableExport": false,
+                    "disableCopyToClipboard": true,
+                    "isSearchable": false
+                  }
+                }
+              }
             }
           }
         }

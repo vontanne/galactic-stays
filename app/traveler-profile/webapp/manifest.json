@@ -76,6 +76,7 @@
               "contextPath": "/Travelers",
               "variantManagement": "None",
               "initialLoad": "Enabled",
+              "hideFilterBar": true,
               "navigation": {
                 "Travelers": {
                   "detail": {
@@ -89,7 +90,10 @@
                     "creationMode": {
                       "name": "CreationDialog",
                       "creationFields": "firstName,lastName,dateOfBirth,species,birthPlanet_ID"
-                    }
+                    },
+                    "personalization": false,
+                    "enableExport": false,
+                    "disableCopyToClipboard": true
                   }
                 }
               }
