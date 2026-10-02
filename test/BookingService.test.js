@@ -485,6 +485,56 @@ describe("BookingService OData APIs", () => {
       });
     });
 
+    it("rejects a review for an inactive hotel", async () => {
+      await UPDATE("galactic.stays.Bookings")
+        .set({ status: "Completed" })
+        .where({ ID: seed.bookings.B1 });
+      await UPDATE("galactic.stays.Hotels")
+        .set({ isActive: false })
+        .where({ ID: seed.hotels.galacticCityHotel });
+
+      const error = await POST(
+        reviews,
+        newReview({ hotel_ID: seed.hotels.galacticCityHotel }),
+      ).catch((error) => error);
+
+      expect(error).to.containSubset({
+        status: 409,
+        code: "HOTEL_INACTIVE",
+        target: "hotel_ID",
+      });
+    });
+
+    it("rejects a review for a hotel on an inactive planet", async () => {
+      await UPDATE("galactic.stays.Bookings")
+        .set({ status: "Completed" })
+        .where({ ID: seed.bookings.B1 });
+      await UPDATE("galactic.stays.Planets")
+        .set({ isActive: false })
+        .where({ ID: seed.planets.coruscant });
+
+      const error = await POST(
+        reviews,
+        newReview({ hotel_ID: seed.hotels.galacticCityHotel }),
+      ).catch((error) => error);
+
+      expect(error).to.containSubset({
+        status: 409,
+        code: "HOTEL_INACTIVE",
+        target: "hotel_ID",
+      });
+    });
+
+    it("still lets the author edit a review of a hotel that became inactive", async () => {
+      await UPDATE("galactic.stays.Hotels")
+        .set({ isActive: false })
+        .where({ ID: seed.hotels.mosEspaGrand });
+
+      const { data: review } = await PATCH(anakinsMosEspaReview, { rating: 5 });
+
+      expect(review.rating).to.equal(5);
+    });
+
     it("allows one review per traveler and hotel", async () => {
       const error = await POST(
         reviews,

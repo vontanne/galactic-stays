@@ -7,6 +7,7 @@ export function registerReviewRules(service) {
   const {
     Travelers: TravelerRecords,
     Bookings: BookingRecords,
+    Hotels: HotelRecords,
     Reviews: ReviewRecords,
   } = cds.entities("galactic.stays");
 
@@ -22,6 +23,12 @@ export function registerReviewRules(service) {
 
     if (!stayIsCompleted) {
       req.reject(409, "COMPLETED_STAY_REQUIRED", "hotel_ID");
+    }
+
+    const hotelIsActive = await activeHotelExists(HotelRecords, hotelId);
+
+    if (!hotelIsActive) {
+      req.reject(409, "HOTEL_INACTIVE", "hotel_ID");
     }
 
     const reviewExists = await SELECT.one
@@ -68,6 +75,16 @@ async function completedStayExists(Bookings, travelerId, hotelId) {
     `;
 
   return booking != null;
+}
+
+async function activeHotelExists(Hotels, hotelId) {
+  const hotel = await SELECT.one.from(Hotels).columns("ID").where`
+      ID = ${hotelId}
+      and isActive = true
+      and planet.isActive = true
+    `;
+
+  return hotel != null;
 }
 
 function normalizeComment(data) {
