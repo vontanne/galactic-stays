@@ -48,6 +48,18 @@ describe("HotelManagementService OData APIs", () => {
       expect(error).to.containSubset({ status: 409, code: "HOTEL_INACTIVE" });
     });
 
+    it("rejects a fractional room capacity", async () => {
+      const error = await POST(rooms, newRoom({ capacity: 2.5 })).catch(
+        (error) => error,
+      );
+
+      expect(error).to.containSubset({
+        status: 400,
+        code: "WHOLE_NUMBER_REQUIRED",
+        target: "capacity",
+      });
+    });
+
     it("still lets the manager change prices in an inactive hotel", async () => {
       await UPDATE("galactic.stays.Hotels")
         .set({ isActive: false })

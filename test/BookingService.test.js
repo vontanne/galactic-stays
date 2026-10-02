@@ -156,6 +156,18 @@ describe("BookingService OData APIs", () => {
       });
     });
 
+    it("rejects a fractional guest count", async () => {
+      const error = await POST(bookings, newBooking({ guestCount: 1.5 })).catch(
+        (error) => error,
+      );
+
+      expect(error).to.containSubset({
+        status: 400,
+        code: "WHOLE_NUMBER_REQUIRED",
+        target: "guestCount",
+      });
+    });
+
     it("rejects unknown rooms and rooms that are not offered", async () => {
       await UPDATE("galactic.stays.Hotels")
         .set({ isActive: false })
@@ -517,6 +529,18 @@ describe("BookingService OData APIs", () => {
           target: "rating",
         });
       }
+    });
+
+    it("accepts only whole-number ratings", async () => {
+      const error = await PATCH(anakinsMosEspaReview, { rating: 4.5 }).catch(
+        (error) => error,
+      );
+
+      expect(error).to.containSubset({
+        status: 400,
+        code: "WHOLE_NUMBER_REQUIRED",
+        target: "rating",
+      });
     });
 
     it("lets the author delete a review and review the hotel again", async () => {

@@ -42,6 +42,8 @@ service BookingService @(path: 'booking') {
       @mandatory
       @Core.Immutable
       @assert: (case
+                  when guestCount <> floor(guestCount)
+                       then 'WHOLE_NUMBER_REQUIRED'
                   when guestCount > room.capacity
                        then 'GUEST_COUNT_EXCEEDS_CAPACITY'
                 end)

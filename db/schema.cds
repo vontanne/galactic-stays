@@ -84,6 +84,10 @@ entity Rooms : cuid, managed {
     1,
     12
   ]
+  @assert: (case
+              when capacity <> floor(capacity)
+                   then 'WHOLE_NUMBER_REQUIRED'
+            end)
   capacity      : Integer not null;
 
   @assert.range: [
@@ -174,6 +178,10 @@ entity Reviews : cuid, managed {
     1,
     5
   ]
+  @assert: (case
+              when rating <> floor(rating)
+                   then 'WHOLE_NUMBER_REQUIRED'
+            end)
   rating   : Integer not null;
 
   comment  : String(1000);
