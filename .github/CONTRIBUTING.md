@@ -12,6 +12,7 @@ Please follow our [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## Guidelines
 
+- For security vulnerabilities, follow the [security policy](SECURITY.md) and report privately.
 - Check existing issues before reporting a bug or proposing a feature.
 - Use the [bug report](https://github.com/vontanne/galactic-stays/issues/new?template=bug_report.md) or [feature request](https://github.com/vontanne/galactic-stays/issues/new?template=feature_request.md) template and provide the requested details.
 - Discuss substantial features or changes to the data model and booking rules in an issue first.

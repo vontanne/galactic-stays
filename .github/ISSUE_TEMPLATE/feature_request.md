@@ -6,6 +6,8 @@ title: "Feature request"
 
 Check existing issues before opening a new request.
 
+For security vulnerabilities, follow the [security policy](https://github.com/vontanne/galactic-stays/blob/master/.github/SECURITY.md) and report privately.
+
 ## Problem
 
 Describe the problem or limitation you want to address.

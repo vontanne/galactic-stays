@@ -6,6 +6,8 @@ title: "Bug report"
 
 Check existing issues before opening a new report. Do not include passwords, tokens, or private information.
 
+For security vulnerabilities, follow the [security policy](https://github.com/vontanne/galactic-stays/blob/master/.github/SECURITY.md) and report privately.
+
 ## Description
 
 Briefly describe the problem.
