@@ -2,6 +2,8 @@
 
 Galactic Stays is an educational SAP CAP project for local development. Contributions that improve its correctness, learning value, or documentation are welcome.
 
+Please follow our [Code of Conduct](CODE_OF_CONDUCT.md).
+
 ## Getting started
 
 1. Fork the repository and create a branch for your change.
@@ -11,7 +13,7 @@ Galactic Stays is an educational SAP CAP project for local development. Contribu
 ## Guidelines
 
 - Check existing issues before reporting a bug or proposing a feature.
-- For bugs, include reproduction steps, expected behavior, and actual behavior.
+- Use the [bug report](https://github.com/vontanne/galactic-stays/issues/new?template=bug_report.md) or [feature request](https://github.com/vontanne/galactic-stays/issues/new?template=feature_request.md) template and provide the requested details.
 - Discuss substantial features or changes to the data model and booking rules in an issue first.
 - Keep changes focused and avoid unrelated refactoring.
 - Prefer CDS declarations for modeling, validation, and authorization. Use focused JavaScript handlers where needed.
