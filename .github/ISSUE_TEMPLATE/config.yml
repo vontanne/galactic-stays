@@ -1,0 +1,6 @@
+blank_issues_enabled: false
+
+contact_links:
+  - name: Questions and discussions
+    url: https://github.com/vontanne/galactic-stays/discussions
+    about: Ask questions about the project and discuss learning topics.
