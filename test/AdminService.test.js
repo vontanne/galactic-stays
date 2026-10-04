@@ -251,7 +251,9 @@ describe("AdminService OData APIs", () => {
       });
     });
 
-    it("lowers the capacity of a room that has only past stays", async () => {
+    it("lowers a capacity that only past or cancelled stays exceed", async () => {
+      await insertBooking({ status: "Cancelled", paymentStatus: "Refunded" });
+
       const { status } = await PATCH(hotel(seed.hotels.galacticCityHotel), {
         rooms: [
           { ID: seed.rooms.galacticCity101, capacity: 1 },

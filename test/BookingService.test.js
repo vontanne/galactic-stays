@@ -232,6 +232,42 @@ describe("BookingService OData APIs", () => {
       expect(stayBefore).to.equal(201);
     });
 
+    it("keeps a paid booking blocking its room but not other rooms", async () => {
+      await insertBooking({
+        checkInDate: isoDate(10),
+        checkOutDate: isoDate(13),
+      });
+
+      const error = await POST(
+        bookings,
+        newBooking({ checkInDate: isoDate(11), checkOutDate: isoDate(12) }),
+      ).catch((error) => error);
+      const { status: otherRoom } = await POST(
+        bookings,
+        newBooking({
+          room_ID: seed.rooms.galacticCity501,
+          checkInDate: isoDate(11),
+          checkOutDate: isoDate(12),
+        }),
+      );
+
+      expect(error).to.containSubset({
+        status: 409,
+        code: "ROOM_NOT_AVAILABLE",
+        target: "room_ID",
+      });
+      expect(otherRoom).to.equal(201);
+    });
+
+    it("frees the room when a booking is cancelled", async () => {
+      const bookingId = await createBooking();
+      await runAction(bookingId, "cancel");
+
+      const { status } = await POST(bookings, newBooking());
+
+      expect(status).to.equal(201);
+    });
+
     it("does not let a lapsed payment hold block the room", async () => {
       await insertBooking({
         ...lapsedPaymentHold(),
@@ -482,6 +518,19 @@ describe("BookingService OData APIs", () => {
         status: 409,
         code: "COMPLETED_STAY_REQUIRED",
         target: "hotel_ID",
+      });
+    });
+
+    it("requires a traveler profile to review a hotel", async () => {
+      const error = await POST(
+        reviews,
+        newReview({ hotel_ID: seed.hotels.mosEspaGrand }),
+        auth("padme"),
+      ).catch((error) => error);
+
+      expect(error).to.containSubset({
+        status: 409,
+        code: "TRAVELER_PROFILE_REQUIRED",
       });
     });
 

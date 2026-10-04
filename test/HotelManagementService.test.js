@@ -7,7 +7,7 @@ const { GET, POST, PATCH, DELETE, expect, data, defaults } = cds.test(
 );
 defaults.auth = { username: "lando", password: "lando" };
 
-const { UPDATE } = cds.ql;
+const { INSERT, UPDATE } = cds.ql;
 
 const hotelManagement = "/odata/v4/hotel-management";
 const bookings = `${hotelManagement}/Bookings`;
@@ -35,6 +35,37 @@ describe("HotelManagementService OData APIs", () => {
       ]);
       expect(ids(bobasBookings.value)).to.have.members([seed.bookings.B2]);
       expect(allBookings.value).to.have.length(5);
+    });
+
+    it("shows managers only the guests of their own hotel", async () => {
+      const leiaId = cds.utils.uuid();
+      await INSERT.into("galactic.stays.Travelers").entries({
+        ID: leiaId,
+        userId: "leia",
+        firstName: "Leia",
+        lastName: "Organa",
+        dateOfBirth: "1990-01-01",
+        species: "Human",
+        birthPlanet_ID: seed.planets.naboo,
+      });
+      await insertBooking({
+        traveler_ID: leiaId,
+        room_ID: seed.rooms.mosEspa101,
+      });
+
+      const { data: landosGuests } = await GET(
+        `${hotelManagement}/Travelers?$select=ID`,
+      );
+      const { data: bobasGuests } = await GET(
+        `${hotelManagement}/Travelers?$select=ID`,
+        auth("boba"),
+      );
+
+      expect(ids(landosGuests.value)).to.have.members([seed.travelers.anakin]);
+      expect(ids(bobasGuests.value)).to.have.members([
+        seed.travelers.anakin,
+        leiaId,
+      ]);
     });
 
     it("shows guests with their names only", async () => {

@@ -48,14 +48,14 @@ describe("CatalogService OData APIs", () => {
     );
     await INSERT.into("galactic.stays.Reviews").entries(
       review(leiaId, 5),
-      review(lukeId, 4),
+      review(lukeId, 5),
     );
 
     const { data: hotel } = await GET(
       `${catalog}/Hotels(${seed.hotels.mosEspaGrand})?$select=averageRating,reviewCount`,
     );
 
-    expect(hotel).to.containSubset({ averageRating: "4.3", reviewCount: 3 });
+    expect(hotel).to.containSubset({ averageRating: "4.7", reviewCount: 3 });
   });
 
   it("lists only the active rooms of a hotel", async () => {
@@ -107,13 +107,17 @@ describe("CatalogService OData APIs", () => {
     expect(reviews.value).to.have.length(0);
   });
 
-  it("hides a deactivated planet together with its hotels", async () => {
+  it("hides a deactivated planet together with its hotels, rooms and reviews", async () => {
     await UPDATE("galactic.stays.Planets")
       .set({ isActive: false })
       .where({ ID: seed.planets.tatooine });
 
     const { data: planets } = await GET(`${catalog}/Planets?$select=name`);
     const { data: hotels } = await GET(`${catalog}/Hotels?$select=name`);
+    const { data: rooms } = await GET(
+      `${catalog}/Rooms?$filter=hotel_ID eq ${seed.hotels.mosEspaGrand}`,
+    );
+    const { data: reviews } = await GET(`${catalog}/Reviews`);
 
     expect(planets.value.map((planet) => planet.name)).to.have.members([
       "Naboo",
@@ -123,6 +127,8 @@ describe("CatalogService OData APIs", () => {
       "Galactic City Hotel",
       "Theed Royal Hotel",
     ]);
+    expect(rooms.value).to.have.length(0);
+    expect(reviews.value).to.have.length(0);
   });
 
   it("rejects writes for anonymous and authenticated users", async () => {
