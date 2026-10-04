@@ -1,0 +1,15 @@
+{
+  "welcomeFile": "launchpad.html",
+  "routes": [
+    {
+      "source": "^/odata/",
+      "destination": "srv-api",
+      "csrfProtection": true
+    },
+    {
+      "source": "^/(.*)$",
+      "target": "$1",
+      "localDir": "resources"
+    }
+  ]
+}

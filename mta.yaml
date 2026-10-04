@@ -1,0 +1,100 @@
+_schema-version: 3.3.0
+ID: galactic-stays
+version: 1.0.0
+description: "Galactic Stays: hotel booking for travelers across the planets of the Star Wars universe"
+parameters:
+  enable-parallel-deployments: true
+build-parameters:
+  before-all:
+    - builder: custom
+      commands:
+        - npm ci
+        - npx cds build --production
+modules:
+  - name: galactic-stays-srv
+    type: nodejs
+    path: gen/srv
+    parameters:
+      instances: 1
+      buildpack: nodejs_buildpack
+    build-parameters:
+      builder: npm-ci
+    provides:
+      - name: srv-api # required by consumers of CAP services (e.g. approuter)
+        properties:
+          srv-url: ${default-url}
+    requires:
+      - name: galactic-stays-auth
+      - name: galactic-stays-db
+      - name: galactic-stays-destination
+
+  - name: galactic-stays-db-deployer
+    type: hdb
+    path: gen/db
+    parameters:
+      buildpack: nodejs_buildpack
+    requires:
+      - name: galactic-stays-db
+  - name: galactic-stays
+    type: approuter.nodejs
+    path: .deploy/app-router
+    parameters:
+      keep-existing-routes: true
+      disk-quota: 256M
+      memory: 256M
+    requires:
+      - name: srv-api
+        group: destinations
+        properties:
+          name: srv-api # must be used in xs-app.json as well
+          url: ~{srv-url}
+          forwardAuthToken: true
+      - name: galactic-stays-auth
+      - name: galactic-stays-destination
+    provides:
+      - name: app-api
+        properties:
+          app-protocol: ${protocol}
+          app-uri: ${default-uri}
+
+resources:
+  - name: galactic-stays-auth
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: xsuaa
+      service-plan: application
+      path: ./xs-security.json
+      config:
+        xsappname: galactic-stays-${org}-${space}
+        tenant-mode: dedicated
+        oauth2-configuration:
+          credential-types:
+            - "binding-secret"
+            - "x509"
+          redirect-uris:
+            - https://*~{app-api/app-uri}/**
+        role-collections:
+          - name: "Admin (galactic-stays ${org}-${space})"
+            description: "generated"
+            role-template-references:
+              - "$XSAPPNAME.Admin"
+          - name: "Traveler (galactic-stays ${org}-${space})"
+            description: "generated"
+            role-template-references:
+              - "$XSAPPNAME.Traveler"
+          - name: "HotelManager (galactic-stays ${org}-${space})"
+            description: "generated"
+            role-template-references:
+              - "$XSAPPNAME.HotelManager"
+    requires:
+      - name: app-api
+  - name: galactic-stays-db
+    type: com.sap.xs.hdi-container
+    parameters:
+      service: hana
+      service-plan: hdi-shared
+  - name: galactic-stays-destination
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: destination
+      service-plan: lite

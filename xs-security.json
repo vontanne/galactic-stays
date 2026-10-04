@@ -1,0 +1,37 @@
+{
+  "scopes": [
+    {
+      "name": "$XSAPPNAME.Admin",
+      "description": "Admin"
+    },
+    {
+      "name": "$XSAPPNAME.Traveler",
+      "description": "Traveler"
+    },
+    {
+      "name": "$XSAPPNAME.HotelManager",
+      "description": "HotelManager"
+    }
+  ],
+  "attributes": [],
+  "role-templates": [
+    {
+      "name": "Admin",
+      "description": "generated",
+      "scope-references": ["$XSAPPNAME.Admin"],
+      "attribute-references": []
+    },
+    {
+      "name": "Traveler",
+      "description": "generated",
+      "scope-references": ["$XSAPPNAME.Traveler"],
+      "attribute-references": []
+    },
+    {
+      "name": "HotelManager",
+      "description": "generated",
+      "scope-references": ["$XSAPPNAME.HotelManager"],
+      "attribute-references": []
+    }
+  ]
+}
